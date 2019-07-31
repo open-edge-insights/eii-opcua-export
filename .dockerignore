@@ -1,0 +1,21 @@
+ert-tool/
+dist_libs/
+docker_setup/
+FactoryControlApp/
+licenses/
+StreamManager/
+Telegraf/
+test_videos/
+VideoIngestion/
+DataAnalytics/
+.git
+
+# Recursively remove all unwanted files
+**/*.md
+**/*.mp4
+**/*.avi
+**/*.pyc
+**/*.tar
+**/*.log
+**/*.log.*
+
