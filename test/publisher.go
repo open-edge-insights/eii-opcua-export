@@ -24,60 +24,63 @@ package main
 
 import (
 	eismsgbus "EISMessageBus/eismsgbus"
+	util "IEdgeInsights/libs/common/go"
 	"flag"
-	"time"
-        "os"
-        "strconv"
-        "github.com/golang/glog"
+	"os"
+	"strconv"
+
+	"github.com/golang/glog"
 )
 
 func main() {
-	portArg := flag.String("port", "", "port")
 	topic := flag.String("topic", "", "topic")
+	devModeStr := flag.String("devmode", "", "devmode")
 	flag.Parse()
-        flag.Lookup("alsologtostderr").Value.Set("true")
-        defer glog.Flush()
+	flag.Lookup("alsologtostderr").Value.Set("true")
+	defer glog.Flush()
 
-        port, err := strconv.ParseInt(*portArg, 10, 64)
+	var config map[string]interface{}
+	devMode, err := strconv.ParseBool(*devModeStr)
 	if err != nil {
-		glog.Errorf("string to int64 converstion Error: %v", err)
-		os.Exit(1)
+		glog.Errorf("string to bool conversion error")
 	}
 
-        host := map[string]interface{}{
-		"host": "*",
-		"port": port,
-	}
-        config := map[string]interface{}{
-		"type": "zmq_tcp",
-		"zmq_tcp_publish": host,
-	}
-
-
-	glog.Infof("-- Initializing message bus context")
-	client, err := eismsgbus.NewMsgbusClient(config)
-	if err != nil {
-		glog.Errorf("-- Error initializing message bus context: %v\n", err)
-		return
-	}
-	defer client.Close()
-
-	glog.Infof("-- Creating publisher for topic %s\n", *topic)
-	publisher, err := client.NewPublisher(*topic)
-	if err != nil {
-		glog.Errorf("-- Error creating publisher: %v\n", err)
-		return
-	}
-	defer publisher.Close()
-
-	glog.Infof("-- Running...")
-	msg := map[string]interface{}{"hello": "world"}
-	for {
-		err = publisher.Publish(msg)
+	os.Setenv("PubTopics", *topic)
+	os.Setenv("AppName", "VideoAnalytics")
+	os.Setenv(*topic+"_cfg", "zmq_tcp,127.0.0.1:65013")
+	os.Setenv("Subscribers", "OpcuaExport")
+	pubTopics := util.GetTopics("PUB")
+	cfgMgrConfig := map[string]string{
+                "certFile":  "",
+                "keyFile":   "",
+                "trustFile": "",
+        }
+	for _, pubTopic := range pubTopics {
+		config = util.GetMessageBusConfig(pubTopic, "PUB", devMode, cfgMgrConfig)
+		glog.Infof("-- Initializing message bus context")
+		client, err := eismsgbus.NewMsgbusClient(config)
 		if err != nil {
-			glog.Errorf("-- Failed to publish message: %v\n", err)
+			glog.Errorf("-- Error initializing message bus context: %v\n", err)
 			return
 		}
-		time.Sleep(1 * time.Second)
+		defer client.Close()
+
+		glog.Infof("-- Creating publisher for topic %s \n", *topic)
+		publisher, err := client.NewPublisher(*topic)
+		if err != nil {
+			glog.Errorf("-- Error creating publisher: %v\n", err)
+			return
+		}
+		defer publisher.Close()
+
+		glog.Infof("-- Running...")
+		msg := map[string]interface{}{"hello": "world"}
+		for {
+			err = publisher.Publish(msg)
+			if err != nil {
+				glog.Errorf("-- Failed to publish message: %v\n", err)
+				return
+			}
+		}
 	}
 }

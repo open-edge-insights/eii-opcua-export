@@ -26,8 +26,10 @@ RUN cd safestringlib && \
 RUN cd /IEI/go/src/IEdgeInsights/libs/DataBusAbstraction/go/test && \
     make build_lib_for_docker
 
+COPY libs/ConfigManager ./libs/ConfigManager
 COPY libs/common/go ./libs/common/go
 COPY OpcuaExport ./OpcuaExport
+COPY Util ./Util
 
 RUN cd OpcuaExport && go build OpcuaExport.go
 ENTRYPOINT ["./OpcuaExport/OpcuaExport"]

@@ -29,6 +29,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+        "strconv"
 
 	"github.com/golang/glog"
 )
@@ -54,17 +55,30 @@ type messageBus struct {
 type OpcuaExport struct {
 	opcuaBus opcuaBus
 	msgBus   messageBus
+	devMode  bool
+	cfgMgrConfig map[string]string
 }
 
 //NewOpcuaExport function to create OpcuaExport instance
 func NewOpcuaExport() (opcuaExport *OpcuaExport, err error) {
 	opcuaExport = &OpcuaExport{}
+        devMode, err := strconv.ParseBool(os.Getenv("DEV_MODE"))
+        if err != nil {
+		glog.Errorf("string to bool conversion error")
+		os.Exit(1)
+        }
+	opcuaExport.devMode = devMode
 	opcuaExport.opcuaBus.pubTopics = util.GetTopics("PUB")
 	opcuaExport.msgBus.subTopics = util.GetTopics("SUB")
 	pubConfigList := strings.Split(os.Getenv("OpcuaExportCfg"), ",")
 	endpoint := pubConfigList[0] + "://" + pubConfigList[1]
 
 	// TODO: add support for both prod and dev mode
+	opcuaExport.cfgMgrConfig = map[string]string{
+		"certFile":  "",
+		"keyFile":   "",
+		"trustFile": "",
+	}
 	opcuaContext := map[string]string{
 		"direction":   "PUB",
 		"endpoint":    endpoint,
@@ -91,9 +105,11 @@ func NewOpcuaExport() (opcuaExport *OpcuaExport, err error) {
 func (opcuaExport *OpcuaExport) Subscribe() {
 	glog.Infof("-- Initializing message bus context")
 
-	for _, topic := range opcuaExport.msgBus.subTopics {
-		config := util.GetTopicConfig(topic, "SUB")
-		go worker(opcuaExport, config, topic)
+	for _, subTopicCfg := range opcuaExport.msgBus.subTopics {
+		msgBusConfig := util.GetMessageBusConfig(subTopicCfg, "SUB", opcuaExport.devMode,
+				opcuaExport.cfgMgrConfig)
+                subTopicCfg := strings.Split(subTopicCfg, "/")
+		go worker(opcuaExport, msgBusConfig, subTopicCfg[1])
 	}
 }
 
@@ -106,7 +122,6 @@ func worker(opcuaExport *OpcuaExport, config map[string]interface{}, topic strin
 		return
 	}
 	defer client.Close()
-
 	subscriber, err := client.NewSubscriber(topic)
 	if err != nil {
 		glog.Errorf("-- Error subscribing to topic: %v\n", err)
