@@ -33,7 +33,7 @@ import (
 )
 
 func main() {
-	topic := flag.String("topic", "", "topic")
+	topic := "camera1_stream_results"
 	devModeStr := flag.String("devmode", "", "devmode")
 	flag.Parse()
 	flag.Lookup("alsologtostderr").Value.Set("true")
@@ -45,9 +45,9 @@ func main() {
 		glog.Errorf("string to bool conversion error")
 	}
 
-	os.Setenv("PubTopics", *topic)
+	os.Setenv("PubTopics", topic)
 	os.Setenv("AppName", "VideoAnalytics")
-	os.Setenv(*topic+"_cfg", "zmq_tcp,127.0.0.1:65013")
+	os.Setenv(topic+"_cfg", "zmq_tcp,127.0.0.1:65013")
 	os.Setenv("Subscribers", "OpcuaExport")
 	pubTopics := util.GetTopics("PUB")
 	cfgMgrConfig := map[string]string{
@@ -65,8 +65,8 @@ func main() {
 		}
 		defer client.Close()
 
-		glog.Infof("-- Creating publisher for topic %s \n", *topic)
-		publisher, err := client.NewPublisher(*topic)
+		glog.Infof("-- Creating publisher for topic %s \n", topic)
+		publisher, err := client.NewPublisher(topic)
 		if err != nil {
 			glog.Errorf("-- Error creating publisher: %v\n", err)
 			return

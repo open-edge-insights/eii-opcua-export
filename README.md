@@ -33,7 +33,7 @@ OpcuaExportCfg: "opcua,localhost:65003"
         ```
         $ cd [repo]/docker_setup
         $ ln -sf OpcuaExport/.dockerignore ../.dockerignore
-        $ docker-compose up --build OpcuaExport        
+        $ docker-compose up --build ia_opcua_export
        ```
 * Run publisher
 
@@ -42,5 +42,19 @@ OpcuaExportCfg: "opcua,localhost:65003"
 		To run a test publiser follow below steps
 	```
 	$cd [repo]/OpcuaExport/test/
-    	$go run publisher.go -port <port, data to be published to> -topic <topic name>
-   	Ex: $go run publisher.go -port 65013 -topic camera1_stream_results
+	$go run publisher.go -devmode true/false
+	```
+
+* To Run test opcua client subscrier
+
+        1. Make sure data is getting published from OpcuaExport
+
+        To run a test subscriber follow below steps
+        ```
+        $cd [repo]/libs/DataBusAbstraction/c/test
+
+        Follow README, mainly follow Pre-requisites section and run below command as currently OpcuaExport is not enbaled with opcua security
+
+	$make sub_insecure
+
+	```

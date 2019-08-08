@@ -27,6 +27,7 @@ import (
 	databus "IEdgeInsights/libs/DataBusAbstraction/go"
 	util "IEdgeInsights/libs/common/go"
 	"fmt"
+	"flag"
 	"os"
 	"strings"
         "strconv"
@@ -155,6 +156,8 @@ func (opcuaExport *OpcuaExport) Publish(data interface{}) {
 }
 
 func main() {
+	flag.Parse()
+	flag.Lookup("alsologtostderr").Value.Set("true")
 	opcuaExport, err := NewOpcuaExport()
 	if err != nil {
 		glog.Errorf("Opcua-Export instance creation Error: %v", err)
