@@ -35,7 +35,7 @@ OpcuaExportCfg: "opcua,localhost:65003"
         $ ln -sf OpcuaExport/.dockerignore ../.dockerignore
         $ docker-compose up --build OpcuaExport        
        ```
-* Run publsiher
+* Run publisher
 
 	1. Make sure data is getting published over EIS Message Bus
 
