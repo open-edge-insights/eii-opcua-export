@@ -48,7 +48,7 @@ func main() {
 	os.Setenv("PubTopics", topic)
 	os.Setenv("AppName", "VideoAnalytics")
 	os.Setenv(topic+"_cfg", "zmq_tcp,127.0.0.1:65013")
-	os.Setenv("Subscribers", "OpcuaExport")
+	os.Setenv("Clients", "OpcuaExport")
 	pubTopics := util.GetTopics("PUB")
 	cfgMgrConfig := map[string]string{
                 "certFile":  "",
