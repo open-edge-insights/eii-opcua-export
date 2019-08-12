@@ -24,13 +24,13 @@ package main
 
 import (
 	eismsgbus "EISMessageBus/eismsgbus"
-	databus "IEdgeInsights/libs/DataBusAbstraction/go"
+	databus "IEdgeInsights/libs/OpcuaBusAbstraction/go"
 	util "IEdgeInsights/libs/common/go"
-	"fmt"
 	"flag"
+	"fmt"
 	"os"
+	"strconv"
 	"strings"
-        "strconv"
 
 	"github.com/golang/glog"
 )
@@ -54,20 +54,20 @@ type messageBus struct {
 
 // OpcuaExport struct with both opcuaBus and messageBus configurations
 type OpcuaExport struct {
-	opcuaBus opcuaBus
-	msgBus   messageBus
-	devMode  bool
+	opcuaBus     opcuaBus
+	msgBus       messageBus
+	devMode      bool
 	cfgMgrConfig map[string]string
 }
 
 //NewOpcuaExport function to create OpcuaExport instance
 func NewOpcuaExport() (opcuaExport *OpcuaExport, err error) {
 	opcuaExport = &OpcuaExport{}
-        devMode, err := strconv.ParseBool(os.Getenv("DEV_MODE"))
-        if err != nil {
+	devMode, err := strconv.ParseBool(os.Getenv("DEV_MODE"))
+	if err != nil {
 		glog.Errorf("string to bool conversion error")
 		os.Exit(1)
-        }
+	}
 	opcuaExport.devMode = devMode
 	opcuaExport.opcuaBus.pubTopics = util.GetTopics("PUB")
 	opcuaExport.msgBus.subTopics = util.GetTopics("SUB")
@@ -108,8 +108,8 @@ func (opcuaExport *OpcuaExport) Subscribe() {
 
 	for _, subTopicCfg := range opcuaExport.msgBus.subTopics {
 		msgBusConfig := util.GetMessageBusConfig(subTopicCfg, "SUB", opcuaExport.devMode,
-				opcuaExport.cfgMgrConfig)
-                subTopicCfg := strings.Split(subTopicCfg, "/")
+			opcuaExport.cfgMgrConfig)
+		subTopicCfg := strings.Split(subTopicCfg, "/")
 		go worker(opcuaExport, msgBusConfig, subTopicCfg[1])
 	}
 }

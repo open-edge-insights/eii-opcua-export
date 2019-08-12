@@ -51,7 +51,7 @@ OpcuaExportCfg: "opcua,localhost:65003"
 
         To run a test subscriber follow below steps
         ```
-        $cd [repo]/libs/DataBusAbstraction/c/test
+        $cd [repo]/libs/OpcuaBusAbstraction/c/test
 
         Follow README, mainly follow Pre-requisites section and run below command as currently OpcuaExport is not enbaled with opcua security
 

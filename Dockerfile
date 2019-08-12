@@ -8,7 +8,7 @@ RUN apt-get install -y libmbedtls-dev
 
 WORKDIR /IEI/go/src/IEdgeInsights
 
-COPY libs/DataBusAbstraction ./libs/DataBusAbstraction
+COPY libs/OpcuaBusAbstraction ./libs/OpcuaBusAbstraction
 
 #TODO: comeup with placing safestringlib build steps at one place
 RUN git clone https://github.com/intel/safestringlib.git && \
@@ -20,10 +20,10 @@ RUN git clone https://github.com/intel/safestringlib.git && \
         make
 
 RUN cd safestringlib && \
-    cp -rf libsafestring.a /IEI/go/src/IEdgeInsights/libs/DataBusAbstraction/go && \
-    cp -rf libsafestring.a /IEI/go/src/IEdgeInsights/libs/DataBusAbstraction/c/open62541/src
+    cp -rf libsafestring.a /IEI/go/src/IEdgeInsights/libs/OpcuaBusAbstraction/go && \
+    cp -rf libsafestring.a /IEI/go/src/IEdgeInsights/libs/OpcuaBusAbstraction/c/open62541/src
 
-RUN cd /IEI/go/src/IEdgeInsights/libs/DataBusAbstraction/go/test && \
+RUN cd /IEI/go/src/IEdgeInsights/libs/OpcuaBusAbstraction/go/test && \
     make build_lib_for_docker
 
 COPY libs/EISMessageBus ./libs/EISMessageBus
