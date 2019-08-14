@@ -24,10 +24,12 @@ package main
 
 import (
 	eismsgbus "EISMessageBus/eismsgbus"
+	configmgr "IEdgeInsights/libs/ConfigManager"
 	databus "IEdgeInsights/libs/OpcuaBusAbstraction/go"
 	util "IEdgeInsights/libs/common/go"
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"strconv"
 	"strings"
@@ -62,6 +64,7 @@ type OpcuaExport struct {
 
 //NewOpcuaExport function to create OpcuaExport instance
 func NewOpcuaExport() (opcuaExport *OpcuaExport, err error) {
+	var opcuaContext map[string]string
 	opcuaExport = &OpcuaExport{}
 	devMode, err := strconv.ParseBool(os.Getenv("DEV_MODE"))
 	if err != nil {
@@ -80,12 +83,44 @@ func NewOpcuaExport() (opcuaExport *OpcuaExport, err error) {
 		"keyFile":   "",
 		"trustFile": "",
 	}
-	opcuaContext := map[string]string{
-		"direction":   "PUB",
-		"endpoint":    endpoint,
-		"certFile":    "",
-		"privateFile": "",
-		"trustFile":   "",
+	opcuaContext = map[string]string{
+		"direction": "PUB",
+		"endpoint":  endpoint,
+	}
+	opcuaContext["certFile"] = ""
+	opcuaContext["privateFile"] = ""
+	opcuaContext["trustFile"] = ""
+
+	if !opcuaExport.devMode {
+		opcuaExport.cfgMgrConfig = map[string]string{
+			"certFile":  "/run/secrets/etcd_OpcuaExport_cert",
+			"keyFile":   "/run/secrets/etcd_OpcuaExport_key",
+			"trustFile": "/run/secrets/ca_etcd",
+		}
+
+		cfgMgr := configmgr.Init("etcd", opcuaExport.cfgMgrConfig)
+		opcuaCertFile, err := cfgMgr.GetConfig("/OpcuaExport/server_cert")
+		if err != nil {
+			glog.Fatal(err)
+		}
+		opcuaKeyFile, err := cfgMgr.GetConfig("/OpcuaExport/server_key")
+		if err != nil {
+			glog.Fatal(err)
+		}
+		opcuaTrustFile, err := cfgMgr.GetConfig("/OpcuaExport/ca_cert")
+		if err != nil {
+			glog.Fatal(err)
+		}
+		certFile := []byte(opcuaCertFile)
+		err = ioutil.WriteFile("opcua_server_cert.der", certFile, 0644)
+		certFile = []byte(opcuaKeyFile)
+		err = ioutil.WriteFile("opcua_server_key.der", certFile, 0644)
+		certFile = []byte(opcuaTrustFile)
+		err = ioutil.WriteFile("ca_cert.der", certFile, 0644)
+
+		opcuaContext["certFile"] = "opcua_server_cert.der"
+		opcuaContext["privateFile"] = "opcua_server_key.der"
+		opcuaContext["trustFile"] = "ca_cert.der"
 	}
 
 	opcuaExport.opcuaBus.opcuaDatab, err = databus.NewDataBus()
