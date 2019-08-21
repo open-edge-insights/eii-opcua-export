@@ -1,6 +1,6 @@
 # Dockerfile
 ARG EIS_VERSION
-FROM ia_gobase:$EIS_VERSION as base
+FROM ia_gobase:$EIS_VERSION as gobase
 
 LABEL description="OpcuaExport image"
 
@@ -22,7 +22,14 @@ RUN echo "Building the open62541 wrapper library libopen62541W.a.." && \
     ar crU libopen62541W.a DataBus.o open62541_wrappers.o open62541.o && ar crU libsafestring.a DataBus.o open62541_wrappers.o open62541.o && \
     rm -rf DataBus.o open62541_wrappers.o open62541.o
 
-RUN cd /EIS/go/src/IEdgeInsights/libs/EISMessageBus && \
+FROM ia_common:$EIS_VERSION as common
+
+FROM gobase
+
+COPY --from=common /libs ${GO_WORK_DIR}/libs
+COPY --from=common /Util ${GO_WORK_DIR}/Util
+
+RUN cd ${GO_WORK_DIR}/libs/EISMessageBus && \
     rm -rf build deps && mkdir -p build && cd build && \
     cmake -DWITH_GO=ON .. && \
     make && \
@@ -35,8 +42,9 @@ ENV CGO_CFLAGS -I$MSGBUS_DIR/include/
 ENV CGO_LDFLAGS -L$MSGBUS_DIR/build -leismsgbus
 ENV LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:/usr/local/lib
 
-COPY . ./OpcuaExport/
+RUN ln -s ${GO_WORK_DIR}/libs/EISMessageBus/go/EISMessageBus/ $GOPATH/src/EISMessageBus
 
+COPY . ./OpcuaExport/
 
 RUN cd OpcuaExport && go build OpcuaExport.go
 ENTRYPOINT ["./OpcuaExport/OpcuaExport"]
