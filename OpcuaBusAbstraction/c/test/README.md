@@ -9,9 +9,7 @@ The C example program demonstrates publish and subscription over OPCUA bus only 
 
 > **NOTE**:
 > The `Pre-requisite` section below is `only` needed if executing from
-> the IEI repo. It should not be run from IEI dist libs path
-> (/opt/intel/iei/dist_libs). If run, it would fail and one may have to re-create
-> dist_libs to overcome any issue thereafter.
+> the EIS repo.
 
   ```sh
   make clean
@@ -52,8 +50,5 @@ make sub_insecure
 make clean
 ```
 
-### 5. To view the documentation navigate to the below link
 
-```sh
-/opt/intel/iei/dist_libs/OpcuaBusAbstraction/c/doc/html/index.html
 ```

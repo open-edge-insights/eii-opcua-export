@@ -1,5 +1,4 @@
-ert-tool/
-dist_libs/
+cert-tool/
 docker_setup/
 FactoryControlApp/
 licenses/

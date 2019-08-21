@@ -62,8 +62,8 @@ class A:
                          "privateFile": args.privateFile,
                          "trustFile": args.trustFile}
         try:
-            ieidbus = databus(logger)
-            ieidbus.ContextCreate(contextConfig)
+            eisdbus = databus(logger)
+            eisdbus.ContextCreate(contextConfig)
             topicConfigs = []
             topicsList = args.topics.split(',')
             for topic in topicsList:
@@ -74,11 +74,11 @@ class A:
                 for i in range(0, 20):
                     for topicConfig in topicConfigs:
                         result = "{0} {1}".format(topicConfig["name"], i)
-                        ieidbus.Publish(topicConfig, result)
+                        eisdbus.Publish(topicConfig, result)
                         print("Published [" + result + "]")
                         time.sleep(1)
             elif args.direction == "SUB":
-                ieidbus.Subscribe(topicConfigs, len(topicConfigs), 'START',
+                eisdbus.Subscribe(topicConfigs, len(topicConfigs), 'START',
                                   self.cbFunc)
 
                 # flag = "START"
@@ -89,7 +89,7 @@ class A:
         except KeyboardInterrupt as e:
             logger.exception("Received SIGTERM signal, doing app shutdown")
             logger.exception("Exception: {}".format(e))
-            ieidbus.ContextDestroy()
+            eisdbus.ContextDestroy()
             os._exit(-1)
         except Exception as e:
             logger.exception("Exception: {}".format(e))

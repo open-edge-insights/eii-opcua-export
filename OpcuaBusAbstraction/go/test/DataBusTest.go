@@ -71,12 +71,12 @@ func main() {
 	}
 
 	defer errHandler()
-	ieiDatab, err := databus.NewDataBus()
+	eisDatab, err := databus.NewDataBus()
 	if err != nil {
 		panic(err)
 	}
 
-	err = ieiDatab.ContextCreate(contextConfig)
+	err = eisDatab.ContextCreate(contextConfig)
 	if err != nil {
 		panic(err)
 	}
@@ -86,19 +86,19 @@ func main() {
 		for i := 0; i < 100; i++ {
 			for _, topicConfig := range topicConfigs {
 				result := fmt.Sprintf("%s %d", topicConfig["name"], i)
-				ieiDatab.Publish(topicConfig, result)
+				eisDatab.Publish(topicConfig, result)
 				glog.Infof("Published result: %s\n", result)
 				time.Sleep(time.Second)
 			}
 		}
 	} else if *direction == "SUB" {
 		glog.Info("opcua subscriber is not implemented...")
-		// ieiDatab.Subscribe(topicConfigs, len(topicConfigs) "START", cbFunc)
+		// eisDatab.Subscribe(topicConfigs, len(topicConfigs) "START", cbFunc)
 		// time.Sleep(5 * time.Second)
 
 		// for i := 0; i < 200; i++ {
 		// 	time.Sleep(time.Second)
 		// }
 	}
-	ieiDatab.ContextDestroy()
+	eisDatab.ContextDestroy()
 }

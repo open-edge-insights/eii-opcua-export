@@ -62,7 +62,7 @@ class TestDBA(unittest.TestCase):
         count = count + 1
 
     def subscribe(self):
-        ieidbussub = databus(logger)
+        eisdbussub = databus(logger)
         contextConfigsub = {
                     "endpoint": "opcua://localhost:65003",
                     "direction": "SUB",
@@ -71,10 +71,10 @@ class TestDBA(unittest.TestCase):
                     "trustFile": "/etc/ssl/ca/ca_certificate.der"
                     }
 
-        ieidbussub.ContextCreate(contextConfigsub)
+        eisdbussub.ContextCreate(contextConfigsub)
         topicConfigs = []
         topicConfigs.append(topicConfig)
-        ieidbussub.Subscribe(topicConfigs, 1, "START", self.cbFunc)
+        eisdbussub.Subscribe(topicConfigs, 1, "START", self.cbFunc)
         while pubStop:
             pass
 
@@ -88,15 +88,15 @@ class TestDBA(unittest.TestCase):
         """
 
         print("########## Testing Negative Sub Test ##########")
-        ieidbusnsub = databus(logger)
+        eisdbusnsub = databus(logger)
 
         contextConfig["direction"] = "SUB"
 
         try:
-            ieidbusnsub.ContextCreate(contextConfig)
+            eisdbusnsub.ContextCreate(contextConfig)
             topicConfigs = []
             topicConfigs.append(topicConfig)
-            ieidbusnsub.Subscribe(topicConfigs, 1, "START", self.cbFunc)
+            eisdbusnsub.Subscribe(topicConfigs, 1, "START", self.cbFunc)
             while pubStop:
                 pass
         except Exception as e:
@@ -112,9 +112,9 @@ class TestDBA(unittest.TestCase):
         """
 
         print("########## Testing Negative Context Destroy Test ##########")
-        ieidbusndes = databus(logger)
+        eisdbusndes = databus(logger)
         try:
-            ieidbusndes.ContextDestroy()
+            eisdbusndes.ContextDestroy()
         except Exception as e:
             print("Error is expected, Negative test case passed \
                    with error:", str(e))
@@ -132,18 +132,18 @@ class TestDBA(unittest.TestCase):
         print("########## Testing message pattern ##########")
         global pubStop
         publishcount = 0
-        ieidbuspat = databus(logger)
+        eisdbuspat = databus(logger)
 
         contextConfig["direction"] = "PUB"
-        ieidbuspat.ContextCreate(contextConfig)
-        ieidbuspat.Publish(topicConfig, "Hello Init")
+        eisdbuspat.ContextCreate(contextConfig)
+        eisdbuspat.Publish(topicConfig, "Hello Init")
         sub_thread = threading.Thread(
             target=self.subscribe)
         sub_thread.start()
         time.sleep(5)
         for i in range(0, 3):
             result = "Hello {}".format(i)
-            ieidbuspat.Publish(topicConfig, result)
+            eisdbuspat.Publish(topicConfig, result)
             print("Published [" + result + "]")
             publishcount = i
             time.sleep(5)
@@ -175,18 +175,18 @@ class TestDBA(unittest.TestCase):
 
         print("########## Testing Subscribe Test ##########")
         global pubStop
-        ieidbussub = databus(logger)
+        eisdbussub = databus(logger)
 
         contextConfig["direction"] = "PUB"
-        ieidbussub.ContextCreate(contextConfig)
-        ieidbussub.Publish(topicConfig, "Hello Init")
+        eisdbussub.ContextCreate(contextConfig)
+        eisdbussub.Publish(topicConfig, "Hello Init")
         sub_thread = threading.Thread(
             target=self.subscribe)
         sub_thread.start()
         time.sleep(5)
         for i in range(0, 3):
             result = "Hello {}".format(i)
-            ieidbussub.Publish(topicConfig, result)
+            eisdbussub.Publish(topicConfig, result)
             print("Published [" + result + "]")
             time.sleep(5)
 
@@ -201,13 +201,13 @@ class TestDBA(unittest.TestCase):
         """
 
         print("########## Testing Publish Test ##########")
-        ieidbuspub = databus(logger)
+        eisdbuspub = databus(logger)
 
         contextConfig["direction"] = "PUB"
-        ieidbuspub.ContextCreate(contextConfig)
+        eisdbuspub.ContextCreate(contextConfig)
         for i in range(0, 3):
             result = "Hello {}".format(i)
-            ieidbuspub.Publish(topicConfig, result)
+            eisdbuspub.Publish(topicConfig, result)
             print("Published [" + result + "]")
             time.sleep(5)
 
@@ -222,10 +222,10 @@ class TestDBA(unittest.TestCase):
 
         print("########## Testing Init Test ##########")
         try:
-            ieidbusinit = databus(logger)
+            eisdbusinit = databus(logger)
         except Exception as e:
             logger.exception("Exception: {} in \
-                             creating {}".format(e, ieidbusinit))
+                             creating {}".format(e, eisdbusinit))
         print("########## Testing Init Test Completed ##########\n\n")
 
     def test_g_createContext(self):
@@ -236,10 +236,10 @@ class TestDBA(unittest.TestCase):
         """
 
         print("########## Testing Context create Test ##########")
-        ieidbuscreate = databus(logger)
+        eisdbuscreate = databus(logger)
         contextConfig["direction"] = "PUB"
         try:
-            ieidbuscreate.ContextCreate(contextConfig)
+            eisdbuscreate.ContextCreate(contextConfig)
         except Exception as e:
             logger.exception("Exception: {}".format(e))
 
@@ -256,11 +256,11 @@ class TestDBA(unittest.TestCase):
         """
 
         print("########## Testing Context Destroy Test ##########")
-        ieidbusdes = databus(logger)
+        eisdbusdes = databus(logger)
         contextConfig["direction"] = "PUB"
-        ieidbusdes.ContextCreate(contextConfig)
+        eisdbusdes.ContextCreate(contextConfig)
         try:
-            ieidbusdes.ContextDestroy()
+            eisdbusdes.ContextDestroy()
         except Exception as e:
             logger.exception("Exception: {}".format(e))
 
