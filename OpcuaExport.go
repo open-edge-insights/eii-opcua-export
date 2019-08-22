@@ -91,6 +91,9 @@ func NewOpcuaExport() (opcuaExport *OpcuaExport, err error) {
 	opcuaContext["privateFile"] = ""
 	opcuaContext["trustFile"] = ""
 
+	opcuaCerts := []string{"/tmp/opcua_server_cert.der", "/tmp/opcua_server_key.der", "/tmp/ca_cert.der"}
+	opcuaExportKeys := []string{"/OpcuaExport/server_cert", "/OpcuaExport/server_key", "/OpcuaExport/ca_cert"}
+
 	if !opcuaExport.devMode {
 		opcuaExport.cfgMgrConfig = map[string]string{
 			"certFile":  "/run/secrets/etcd_OpcuaExport_cert",
@@ -99,28 +102,19 @@ func NewOpcuaExport() (opcuaExport *OpcuaExport, err error) {
 		}
 
 		cfgMgr := configmgr.Init("etcd", opcuaExport.cfgMgrConfig)
-		opcuaCertFile, err := cfgMgr.GetConfig("/OpcuaExport/server_cert")
-		if err != nil {
-			glog.Fatal(err)
+		i := 0
+		for _, opcuaExportKey := range opcuaExportKeys {
+			opcuaCertFile, err := cfgMgr.GetConfig(opcuaExportKey)
+			if err != nil {
+				glog.Fatal(err)
+			}
+			certFile := []byte(opcuaCertFile)
+			err = ioutil.WriteFile(opcuaCerts[i], certFile, 0644)
+			i++
 		}
-		opcuaKeyFile, err := cfgMgr.GetConfig("/OpcuaExport/server_key")
-		if err != nil {
-			glog.Fatal(err)
-		}
-		opcuaTrustFile, err := cfgMgr.GetConfig("/OpcuaExport/ca_cert")
-		if err != nil {
-			glog.Fatal(err)
-		}
-		certFile := []byte(opcuaCertFile)
-		err = ioutil.WriteFile("opcua_server_cert.der", certFile, 0644)
-		certFile = []byte(opcuaKeyFile)
-		err = ioutil.WriteFile("opcua_server_key.der", certFile, 0644)
-		certFile = []byte(opcuaTrustFile)
-		err = ioutil.WriteFile("ca_cert.der", certFile, 0644)
-
-		opcuaContext["certFile"] = "opcua_server_cert.der"
-		opcuaContext["privateFile"] = "opcua_server_key.der"
-		opcuaContext["trustFile"] = "ca_cert.der"
+		opcuaContext["certFile"] = opcuaCerts[0]
+		opcuaContext["privateFile"] = opcuaCerts[1]
+		opcuaContext["trustFile"] = opcuaCerts[2]
 	}
 
 	opcuaExport.opcuaBus.opcuaDatab, err = databus.NewDataBus()
@@ -133,6 +127,17 @@ func NewOpcuaExport() (opcuaExport *OpcuaExport, err error) {
 	if err != nil {
 		glog.Errorf("DataBus-OPCUA context creation Error: %v", err)
 		return opcuaExport, err
+	}
+
+	for _, opcuaCert := range opcuaCerts {
+		_, statErr := os.Stat(opcuaCert)
+		if statErr == nil {
+			glog.V(1).Infof("Removing %v", opcuaCert)
+			err = os.Remove(opcuaCert)
+			if err != nil {
+				glog.Errorf("Error while removing opcua cert file %v", err)
+			}
+		}
 	}
 	return opcuaExport, err
 }
