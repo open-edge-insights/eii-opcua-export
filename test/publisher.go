@@ -24,7 +24,7 @@ package main
 
 import (
 	eismsgbus "EISMessageBus/eismsgbus"
-	util "IEdgeInsights/libs/common/go"
+	msgbusutil "IEdgeInsights/util/msgbusutil"
 	"flag"
 	"os"
 	"strconv"
@@ -49,14 +49,14 @@ func main() {
 	os.Setenv("AppName", "VideoAnalytics")
 	os.Setenv(topic+"_cfg", "zmq_tcp,127.0.0.1:65013")
 	os.Setenv("Clients", "OpcuaExport")
-	pubTopics := util.GetTopics("PUB")
+	pubTopics := msgbusutil.GetTopics("PUB")
 	cfgMgrConfig := map[string]string{
-                "certFile":  "",
-                "keyFile":   "",
-                "trustFile": "",
-        }
+		"certFile":  "",
+		"keyFile":   "",
+		"trustFile": "",
+	}
 	for _, pubTopic := range pubTopics {
-		config = util.GetMessageBusConfig(pubTopic, "PUB", devMode, cfgMgrConfig)
+		config = msgbusutil.GetMessageBusConfig(pubTopic, "PUB", devMode, cfgMgrConfig)
 		glog.Infof("-- Initializing message bus context")
 		client, err := eismsgbus.NewMsgbusClient(config)
 		if err != nil {

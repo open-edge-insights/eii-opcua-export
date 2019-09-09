@@ -25,7 +25,7 @@ from queue import Queue
 from threading import Thread, Lock
 from threading import Event
 import logging
-from Util.log import configure_logging, LOG_LEVELS
+from util.log import configure_logging, LOG_LEVELS
 
 # type of databus
 busTypes = {"OPCUA": "opcua:"}

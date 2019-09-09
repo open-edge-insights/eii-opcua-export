@@ -21,7 +21,7 @@ SOFTWARE.
 """
 
 import logging
-from Util.log import configure_logging, LOG_LEVELS
+from util.log import configure_logging, LOG_LEVELS
 import open62541W
 
 # TODO: This brings in a limitation of multiple different contexts
