@@ -1,6 +1,6 @@
 # Dockerfile
 ARG EIS_VERSION
-FROM ia_gobase:$EIS_VERSION as gobase
+FROM ia_eisbase:$EIS_VERSION as eisbase
 
 LABEL description="OpcuaExport image"
 
@@ -24,7 +24,7 @@ RUN echo "Building the open62541 wrapper library libopen62541W.a.." && \
 
 FROM ia_common:$EIS_VERSION as common
 
-FROM gobase
+FROM eisbase
 
 COPY --from=common /libs ${GO_WORK_DIR}/libs
 COPY --from=common /util ${GO_WORK_DIR}/util
