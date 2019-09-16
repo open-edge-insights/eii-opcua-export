@@ -5,9 +5,12 @@ OpcuaExoprt service subscribes to classified results from EIS message bus(VideoA
 
 ## `Configuration`
 
-For more details on Etcd and MessageBus endpoint configuration, visit [Etcd_and_MsgBus_Endpoint_Configuration](../Etcd_and_MsgBus_Endpoint_Configuration].md).
+For more details on Etcd and MessageBus endpoint configuration, visit [Etcd_and_MsgBus_Endpoint_Configuration](../Etcd_and_MsgBus_Endpoint_Configuration.md).
 
 ## `Installation`
+
+* Follow [provision/README.md](../README#provision-eis.md) for EIS provisioning
+  if not done already as part of EIS stack setup
 
 * Run OpcuaExport
 
