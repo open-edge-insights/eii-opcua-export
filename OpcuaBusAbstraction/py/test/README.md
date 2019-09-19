@@ -47,6 +47,7 @@ The python example program demonstrates publish and subscription over OPCUA bus 
 > dist_libs to overcome any issue thereafter.
 
   ```sh
+  sudo apt-get install libmbedtls-dev
   make clean
   make build_safestring_lib
   make build

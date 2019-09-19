@@ -35,10 +35,5 @@ For more details on Etcd and MessageBus endpoint configuration, visit [Etcd_and_
 
         To run a test subscriber follow below steps
         ```
-        $cd [repo]/libs/OpcuaBusAbstraction/c/test
-
-        Follow README, mainly follow Pre-requisites section and run below command as currently OpcuaExport is not enbaled with opcua security
-
-	$make sub_insecure
-
+        Follow README [repo]/libs/OpcuaBusAbstraction/c/test
 	```

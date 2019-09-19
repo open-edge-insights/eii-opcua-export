@@ -8,6 +8,7 @@ The go example program demonstrates publish and subscription over OPCUA bus only
 ### 1. Pre-requisite
 
   ```sh
+  sudo apt-get install libmbedtls-dev
   make clean
   make build_safestring_lib
   ```
