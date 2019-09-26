@@ -26,8 +26,8 @@ import (
 	eismsgbus "EISMessageBus/eismsgbus"
 	configmgr "IEdgeInsights/libs/ConfigManager"
 	databus "IEdgeInsights/libs/OpcuaBusAbstraction/go"
+	util "IEdgeInsights/util"
 	msgbusutil "IEdgeInsights/util/msgbusutil"
-
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -79,11 +79,9 @@ func NewOpcuaExport() (opcuaExport *OpcuaExport, err error) {
 	endpoint := pubConfigList[0] + "://" + pubConfigList[1]
 
 	// TODO: add support for both prod and dev mode
-	opcuaExport.cfgMgrConfig = map[string]string{
-		"certFile":  "",
-		"keyFile":   "",
-		"trustFile": "",
-	}
+	appName := os.Getenv("AppName")
+	opcuaExport.cfgMgrConfig = util.GetCryptoMap(appName)
+
 	opcuaContext = map[string]string{
 		"direction": "PUB",
 		"endpoint":  endpoint,
@@ -96,11 +94,6 @@ func NewOpcuaExport() (opcuaExport *OpcuaExport, err error) {
 	opcuaExportKeys := []string{"/OpcuaExport/server_cert", "/OpcuaExport/server_key", "/OpcuaExport/ca_cert"}
 
 	if !opcuaExport.devMode {
-		opcuaExport.cfgMgrConfig = map[string]string{
-			"certFile":  "/run/secrets/etcd_OpcuaExport_cert",
-			"keyFile":   "/run/secrets/etcd_OpcuaExport_key",
-			"trustFile": "/run/secrets/ca_etcd",
-		}
 
 		cfgMgr := configmgr.Init("etcd", opcuaExport.cfgMgrConfig)
 		i := 0
