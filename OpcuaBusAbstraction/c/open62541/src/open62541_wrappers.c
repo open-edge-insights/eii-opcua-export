@@ -514,9 +514,16 @@ subscriptionCallback(UA_Client *client,
     if(args != NULL && UA_Variant_isScalar(value)) {
         if (value->type == &UA_TYPES[UA_TYPES_STRING]) {
             UA_String str = *(UA_String*)value->data;
+            int destLen = strlen(str.data) - 1;
             if (args->userCallback) {
                 static char subscribedData[PUBLISH_DATA_SIZE];
-                DBA_STRCPY(subscribedData, (char*)str.data);
+                for(int i = destLen; i >=0; i--){
+                    if (str.data[i] ==  ']'){
+                        destLen = i;
+                        break;
+                    }
+                }
+                DBA_STRNCPY(subscribedData, (char*)str.data, destLen + 1);
                 if (strstr(subscribedData, args->topic) != NULL)
                     args->userCallback(args->topic, subscribedData, args->userFunc);
             } else {
