@@ -27,6 +27,11 @@ endpoint:
 	OPCUA -> opcua://localhost:4840
 */
 
+const (
+	maxTopics  = 50
+	maxConfigs = 50
+)
+
 func errHandler() {
 	if r := recover(); r != nil {
 		glog.Errorln(r)
@@ -58,8 +63,12 @@ func main() {
 
 	topicsArr := strings.Split(*topics, ",")
 	topicConfigs := make([]map[string]string, len(topicsArr))
-	for i, topic := range topicsArr {
-		topicConfigs[i] = map[string]string{"ns": *ns, "name": topic, "dType": "string"}
+	if len(topicsArr) > maxTopics {
+		glog.Infof("Max Topics Exceeded", len(topicsArr))
+	} else {
+		for i, topic := range topicsArr {
+			topicConfigs[i] = map[string]string{"ns": *ns, "name": topic, "dType": "string"}
+		}
 	}
 
 	contextConfig := map[string]string{
@@ -84,11 +93,15 @@ func main() {
 	if *direction == "PUB" {
 
 		for i := 0; i < 100; i++ {
-			for _, topicConfig := range topicConfigs {
-				result := fmt.Sprintf("%s %d", topicConfig["name"], i)
-				eisDatab.Publish(topicConfig, result)
-				glog.Infof("Published result: %s\n", result)
-				time.Sleep(time.Second)
+			if len(topicConfigs) > maxConfigs {
+				glog.Infof("Max Topics Exceeded", len(topicConfigs))
+			} else {
+				for _, topicConfig := range topicConfigs {
+					result := fmt.Sprintf("%s %d", topicConfig["name"], i)
+					eisDatab.Publish(topicConfig, result)
+					glog.Infof("Published result: %s\n", result)
+					time.Sleep(time.Second)
+				}
 			}
 		}
 	} else if *direction == "SUB" {
