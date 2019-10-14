@@ -19,15 +19,6 @@ For more details on Etcd and MessageBus endpoint configuration, visit [Etcd_and_
         $ cd [repo]/docker_setup
         $ docker-compose up --build ia_opcua_export
        ```
-* Run publisher
-
-	1. Make sure data is getting published over EIS Message Bus
-
-		To run a test publiser follow below steps
-	```
-	$cd [repo]/OpcuaExport/test/
-	$go run publisher.go -devmode true/false
-	```
 
 * To Run test opcua client subscrier
 
