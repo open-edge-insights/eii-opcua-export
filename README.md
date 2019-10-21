@@ -20,11 +20,38 @@ For more details on Etcd and MessageBus endpoint configuration, visit [Etcd_and_
         $ docker-compose up --build ia_opcua_export
        ```
 
-* To Run test opcua client subscrier
-
-        1. Make sure data is getting published from OpcuaExport
-
-        To run a test subscriber follow below steps
+* Please use below steps to generate opcua client certificates before running test client subscriber for production mode.
+   1. Append following key in `certs' in [docker_setup/provision/config/x509_cert_config.json](../docker_setup/provision/config/x509_cert_config.json) file.
         ```
-        Follow README [repo]/libs/OpcuaBusAbstraction/c/test
+                {
+                "opcua": {
+			"client_alt_name": "",
+			"output_format": "DER"
+                         }
+                }
+        ```
+
+    2. Re-provision EIS using below command in < EIS Repo >/docker_setup/provision folder to reprovision EIS.
+
+        ```
+        $ sudo ./provision_eis.sh <path_to_eis_docker_compose_file>
+
+        eq. $ sudo ./provision_eis.sh ../docker-compose.yml
+
+        ```
+
+      
+    3. Update opcua client certificate access so that sample test program can access the certificates.
+	
 	```
+
+        sudo chmod -R 755 ../../docker_setup/provision/Certificates/ca
+        sudo chmod -R 755 ../../docker_setup/provision/Certificates/opcua
+	
+	 ```
+
+    Caution: This step will make the certs insecure. Please do not do it on a production machine.
+            
+
+* To run a test subscriber follow README at [OpcuaExport/OpcuaBusAbstraction/c/test](OpcuaBusAbstraction/c/test)
+
