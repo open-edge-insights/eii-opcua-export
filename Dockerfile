@@ -8,13 +8,13 @@ RUN apt-get install -y libmbedtls-dev
 
 WORKDIR /EIS/go/src/IEdgeInsights
 
-COPY OpcuaBusAbstraction ./libs/OpcuaBusAbstraction
+COPY OpcuaBusAbstraction ./OpcuaExport/OpcuaBusAbstraction
 
 RUN cd safestringlib && \
-    cp -rf libsafestring.a /EIS/go/src/IEdgeInsights/libs/OpcuaBusAbstraction/go && \
-    cp -rf libsafestring.a /EIS/go/src/IEdgeInsights/libs/OpcuaBusAbstraction/c/open62541/src
+    cp -rf libsafestring.a /EIS/go/src/IEdgeInsights/OpcuaExport/OpcuaBusAbstraction/go && \
+    cp -rf libsafestring.a /EIS/go/src/IEdgeInsights/OpcuaExport/OpcuaBusAbstraction/c/open62541/src
 
-ENV CPATH $GO_WORK_DIR/libs/OpcuaBusAbstraction/c/open62541/src
+ENV CPATH $GO_WORK_DIR/OpcuaExport/OpcuaBusAbstraction/c/open62541/src
 ENV CFLAGS -std=c99 -g -I../include -I../../
 
 RUN echo "Building the open62541 wrapper library libopen62541W.a.." && \
@@ -26,10 +26,10 @@ FROM ia_common:$EIS_VERSION as common
 
 FROM eisbase
 
-COPY --from=common /libs ${GO_WORK_DIR}/libs
-COPY --from=common /util ${GO_WORK_DIR}/util
+COPY --from=common /libs ${GO_WORK_DIR}/common/libs
+COPY --from=common /util ${GO_WORK_DIR}/common/util
 
-RUN cd ${GO_WORK_DIR}/libs/EISMessageBus && \
+RUN cd ${GO_WORK_DIR}/common/libs/EISMessageBus && \
     rm -rf build deps && mkdir -p build && cd build && \
     cmake -DWITH_GO=ON .. && \
     make && \
@@ -42,7 +42,7 @@ ENV CGO_CFLAGS -I$MSGBUS_DIR/include/
 ENV CGO_LDFLAGS -L$MSGBUS_DIR/build -leismsgbus
 ENV LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:/usr/local/lib
 
-RUN ln -s ${GO_WORK_DIR}/libs/EISMessageBus/go/EISMessageBus/ $GOPATH/src/EISMessageBus
+RUN ln -s ${GO_WORK_DIR}/common/libs/EISMessageBus/go/EISMessageBus/ $GOPATH/src/EISMessageBus
 
 COPY . ./OpcuaExport/
 

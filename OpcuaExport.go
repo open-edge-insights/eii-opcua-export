@@ -24,10 +24,10 @@ package main
 
 import (
 	eismsgbus "EISMessageBus/eismsgbus"
-	configmgr "IEdgeInsights/libs/ConfigManager"
-	databus "IEdgeInsights/libs/OpcuaBusAbstraction/go"
-	util "IEdgeInsights/util"
-	msgbusutil "IEdgeInsights/util/msgbusutil"
+	configmgr "IEdgeInsights/common/libs/ConfigManager"
+	databus "IEdgeInsights/OpcuaExport/OpcuaBusAbstraction/go"
+	util "IEdgeInsights/common/util"
+	msgbusutil "IEdgeInsights/common/util/msgbusutil"
 	"flag"
 	"fmt"
 	"io/ioutil"

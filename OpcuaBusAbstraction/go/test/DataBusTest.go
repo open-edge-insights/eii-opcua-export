@@ -11,7 +11,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 package main
 
 import (
-	databus "IEdgeInsights/libs/OpcuaBusAbstraction/go"
+	databus "IEdgeInsights/common/libs/OpcuaBusAbstraction/go"
 	"flag"
 	"fmt"
 	"os"
