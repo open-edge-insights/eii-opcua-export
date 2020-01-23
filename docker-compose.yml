@@ -1,0 +1,48 @@
+version: '3.6'
+
+services:
+  ## Define OpcuaExport service
+  ia_opcua_export:
+    depends_on:
+      - ia_common
+    build:
+      context: $PWD/../OpcuaExport
+      dockerfile: $PWD/../OpcuaExport/Dockerfile
+      args:
+        EIS_VERSION: ${EIS_VERSION}
+    image: ${DOCKER_REGISTRY}ia_opcua_export:${EIS_VERSION}
+    container_name: ia_opcua_export
+    hostname: ia_opcua_export
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      AppName: "OpcuaExport"
+      DEV_MODE: ${DEV_MODE}
+      no_proxy: ${no_proxy}
+
+      # MessageBus Endpoint Configuration
+      CertType: "zmq,der"
+
+      # Use IPC mode (zmq_ipc) when VideoIngestion, VideoAnalytics and Visualizer
+      # based containers are running on the same host. If they are running on diff
+      # host, please use TCP mode for communication.
+      # Eg: Stream cfg for
+      # IPC: zmq_ipc, <absolute_socket_directory_path>
+      # TPC: zmq_tcp, <publisher_host>:<publisher_port>
+      PubTopics: "cam_serial1_results,cam_serial2_results"
+      OpcuaExportCfg: "opcua,localhost:65003"
+      SubTopics: "VideoAnalytics/camera1_stream_results"
+      camera1_stream_results_cfg: "zmq_tcp,127.0.0.1:65013"
+    volumes:
+      - "vol_eis_socket:${SOCKET_DIR}"
+    user: ${EIS_UID}
+    secrets:
+      - ca_etcd
+      - etcd_OpcuaExport_cert
+      - etcd_OpcuaExport_key
+
+secrets:
+  etcd_OpcuaExport_cert:
+    file: provision/Certificates/OpcuaExport/OpcuaExport_client_certificate.pem
+  etcd_OpcuaExport_key:
+    file: provision/Certificates/OpcuaExport/OpcuaExport_client_key.pem

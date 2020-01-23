@@ -16,12 +16,12 @@ For more details on Etcd and MessageBus endpoint configuration, visit [Etcd_Secr
 
 	1. Build and Run OpcuaExport as container
         ```
-        $ cd [repo]/docker_setup
+        $ cd [repo]/build
         $ docker-compose up --build ia_opcua_export
        ```
 
 * Please use below steps to generate opcua client certificates before running test client subscriber for production mode.
-   1. Append following key in `certs' in [docker_setup/provision/config/x509_cert_config.json](../docker_setup/provision/config/x509_cert_config.json) file.
+   1. Append following key in `certs' in [build/provision/config/x509_cert_config.json](../build/provision/config/x509_cert_config.json) file.
         ```
                 {
                 "opcua": {
@@ -31,7 +31,7 @@ For more details on Etcd and MessageBus endpoint configuration, visit [Etcd_Secr
                 }
         ```
 
-    2. Re-provision EIS using below command in < EIS Repo >/docker_setup/provision folder to reprovision EIS.
+    2. Re-provision EIS using below command in < EIS Repo >/build/provision folder to reprovision EIS.
 
         ```
         $ sudo ./provision_eis.sh <path_to_eis_docker_compose_file>
@@ -45,8 +45,8 @@ For more details on Etcd and MessageBus endpoint configuration, visit [Etcd_Secr
 	
 	```
 
-        sudo chmod -R 755 ../../docker_setup/provision/Certificates/ca
-        sudo chmod -R 755 ../../docker_setup/provision/Certificates/opcua
+        sudo chmod -R 755 ../../build/provision/Certificates/ca
+        sudo chmod -R 755 ../../build/provision/Certificates/opcua
 	
 	 ```
 
