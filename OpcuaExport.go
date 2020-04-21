@@ -27,7 +27,7 @@ import (
 	configmgr "ConfigManager"
 	databus "IEdgeInsights/OpcuaExport/OpcuaBusAbstraction/go"
 	util "IEdgeInsights/common/util"
-	msgbusutil "IEdgeInsights/common/util/msgbusutil"
+	envconfig "EnvConfig"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -73,8 +73,8 @@ func NewOpcuaExport() (opcuaExport *OpcuaExport, err error) {
 		os.Exit(1)
 	}
 	opcuaExport.devMode = devMode
-	opcuaExport.opcuaBus.pubTopics = msgbusutil.GetTopics("PUB")
-	opcuaExport.msgBus.subTopics = msgbusutil.GetTopics("SUB")
+	opcuaExport.opcuaBus.pubTopics = envconfig.GetTopics("PUB")
+	opcuaExport.msgBus.subTopics = envconfig.GetTopics("SUB")
 	pubConfigList := strings.Split(os.Getenv("OpcuaExportCfg"), ",")
 	endpoint := pubConfigList[0] + "://" + pubConfigList[1]
 
@@ -145,7 +145,7 @@ func (opcuaExport *OpcuaExport) Subscribe() {
 	glog.Infof("-- Initializing message bus context")
 
 	for _, subTopicCfg := range opcuaExport.msgBus.subTopics {
-		msgBusConfig := msgbusutil.GetMessageBusConfig(subTopicCfg, "SUB", opcuaExport.devMode,
+		msgBusConfig := envconfig.GetMessageBusConfig(subTopicCfg, "SUB", opcuaExport.devMode,
 			opcuaExport.cfgMgrConfig)
 		subTopicCfg := strings.Split(subTopicCfg, "/")
 		go worker(opcuaExport, msgBusConfig, subTopicCfg[1])
