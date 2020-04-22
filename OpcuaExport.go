@@ -24,7 +24,7 @@ package main
 
 import (
 	eismsgbus "EISMessageBus/eismsgbus"
-	configmgr "IEdgeInsights/common/libs/ConfigManager"
+	configmgr "ConfigManager"
 	databus "IEdgeInsights/OpcuaExport/OpcuaBusAbstraction/go"
 	util "IEdgeInsights/common/util"
 	msgbusutil "IEdgeInsights/common/util/msgbusutil"
@@ -96,6 +96,10 @@ func NewOpcuaExport() (opcuaExport *OpcuaExport, err error) {
 	if !opcuaExport.devMode {
 
 		cfgMgr := configmgr.Init("etcd", opcuaExport.cfgMgrConfig)
+		if cfgMgr == nil {
+			glog.Fatalf("Config Manager initialization failed...")
+		}
+
 		i := 0
 		for _, opcuaExportKey := range opcuaExportKeys {
 			opcuaCertFile, err := cfgMgr.GetConfig(opcuaExportKey)
