@@ -1,6 +1,7 @@
 # Dockerfile
 ARG EIS_VERSION
-FROM ia_eisbase:$EIS_VERSION as eisbase
+ARG DOCKER_REGISTRY
+FROM ${DOCKER_REGISTRY}ia_eisbase:$EIS_VERSION as eisbase
 
 LABEL description="OpcuaExport image"
 
@@ -22,7 +23,7 @@ RUN echo "Building the open62541 wrapper library libopen62541W.a.." && \
     ar crU libopen62541W.a DataBus.o open62541_wrappers.o open62541.o && ar crU libsafestring.a DataBus.o open62541_wrappers.o open62541.o && \
     rm -rf DataBus.o open62541_wrappers.o open62541.o
 
-FROM ia_common:$EIS_VERSION as common
+FROM ${DOCKER_REGISTRY}ia_common:$EIS_VERSION as common
 
 FROM eisbase
 

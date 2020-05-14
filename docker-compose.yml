@@ -10,6 +10,7 @@ services:
       dockerfile: $PWD/../OpcuaExport/Dockerfile
       args:
         EIS_VERSION: ${EIS_VERSION}
+        DOCKER_REGISTRY: ${DOCKER_REGISTRY}
     image: ${DOCKER_REGISTRY}ia_opcua_export:${EIS_VERSION}
     container_name: ia_opcua_export
     hostname: ia_opcua_export
