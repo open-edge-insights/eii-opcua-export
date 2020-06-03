@@ -26,7 +26,8 @@ FROM ${DOCKER_REGISTRY}ia_eisbase:$EIS_VERSION as eisbase
 
 LABEL description="OpcuaExport image"
 
-RUN apt-get install -y libmbedtls-dev
+RUN apt-get update && \
+    apt-get install -y libmbedtls-dev
 
 WORKDIR /EIS/go/src/IEdgeInsights
 
