@@ -33,18 +33,6 @@ WORKDIR /EIS/go/src/IEdgeInsights
 
 COPY OpcuaBusAbstraction ./OpcuaExport/OpcuaBusAbstraction
 
-RUN cd safestringlib && \
-    cp -rf libsafestring.a /EIS/go/src/IEdgeInsights/OpcuaExport/OpcuaBusAbstraction/go && \
-    cp -rf libsafestring.a /EIS/go/src/IEdgeInsights/OpcuaExport/OpcuaBusAbstraction/c/open62541/src
-
-ENV CPATH $GO_WORK_DIR/OpcuaExport/OpcuaBusAbstraction/c/open62541/src
-ENV CFLAGS -std=c99 -g -I../include -I../../
-
-RUN echo "Building the open62541 wrapper library libopen62541W.a.." && \
-    cd ${CPATH} && gcc ${CFLAGS} -c ../../DataBus.c open62541_wrappers.c && gcc ${CFLAGS} -c open62541.c && \
-    ar crU libopen62541W.a DataBus.o open62541_wrappers.o open62541.o && ar crU libsafestring.a DataBus.o open62541_wrappers.o open62541.o && \
-    rm -rf DataBus.o open62541_wrappers.o open62541.o
-
 FROM ${DOCKER_REGISTRY}ia_common:$EIS_VERSION as common
 
 FROM eisbase
@@ -57,6 +45,16 @@ COPY --from=common /usr/local/include /usr/local/include
 COPY --from=common ${GO_WORK_DIR}/../EISMessageBus ${GO_WORK_DIR}/../EISMessageBus
 COPY --from=common ${GO_WORK_DIR}/../ConfigManager ${GO_WORK_DIR}/../ConfigManager
 COPY --from=common ${GO_WORK_DIR}/../EnvConfig ${GO_WORK_DIR}/../EnvConfig
+
+ENV CPATH $GO_WORK_DIR/OpcuaExport/OpcuaBusAbstraction/c/open62541/src
+ENV CFLAGS -std=c99 -g -fpic -I../include -I../../
+
+RUN echo "Building the open62541 wrapper library libopen62541W.so.." && \
+    cd ${CPATH} && gcc ${CFLAGS} -c ../../DataBus.c open62541_wrappers.c && gcc ${CFLAGS} -c open62541.c && \
+    gcc -shared -o libopen62541W.so DataBus.o open62541_wrappers.o open62541.o -L/usr/local/lib -lsafestring &&  \
+    rm -rf DataBus.o open62541_wrappers.o open62541.o
+
+RUN cd ${CPATH} && cp libopen62541W.so /usr/local/lib
 
 COPY . ./OpcuaExport/
 
