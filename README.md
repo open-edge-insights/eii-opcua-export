@@ -1,6 +1,6 @@
 # `OpcuaExport`
 
-OpcuaExoprt service subscribes to classified results from EIS message bus(VideoAnalytics) and starts publishing meta data to opcua clients
+OpcuaExoprt service subscribes to classified results from EIS message bus(VideoAnalytics/TimeSeries) and starts publishing meta data to all the topics(PubTopics) and the same metadata is received by opcua clients.
 
 
 ## `Configuration`
