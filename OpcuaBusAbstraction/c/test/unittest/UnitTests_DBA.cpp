@@ -1,11 +1,19 @@
-#include <gtest/gtest.h>
-#include <CommonTestUtils.h>
+/*
+Copyright (c) 2020 Intel Corporation.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
+
 #include <time.h>
 #include <sys/time.h>
 #include <stdlib.h>
 #include <string.h>
-
-using namespace std;
+#include <gtest/gtest.h>
+#include <CommonTestUtils.h>
 
 char pub[] = "PUB";
 char sub[] = "SUB";
@@ -25,21 +33,17 @@ int topicMsgCount[10] = {
     0x00,
 };
 
-int strToInt(const char *text)
-{
+int strToInt(const char *text) {
     int n = 0;
-    for (; isdigit(*text); ++text)
-    {
+    for (; isdigit(*text); ++text) {
         n *= 10;
         n += (*text - '0');
     }
     return n;
 }
 
-void cb(const char *topic, const char *data, void *pyFunc)
-{
-    if (topic)
-    {
+void cb(const char *topic, const char *data, void *pyFunc) {
+    if (topic) {
         int val = strToInt(topic + 5);
         topicMsgCount[val]++;
     }
@@ -48,8 +52,7 @@ void cb(const char *topic, const char *data, void *pyFunc)
         printf("Data received: topic=%s and data=%s\n", topic, data);
 }
 
-TEST(ContextCreateTestCase, PositiveTestcaseCreateContextPub)
-{
+TEST(ContextCreateTestCase, PositiveTestcaseCreateContextPub) {
     /*Test description: This testcase calls ContextCreate API 
     for publisher and do not expect any error message*/
     struct ContextConfig contextConfig;
@@ -59,8 +62,7 @@ TEST(ContextCreateTestCase, PositiveTestcaseCreateContextPub)
                 trustFileArray, 1, "opcua://localhost:65003", pub);
     char *errorMsg = ContextCreate(contextConfig);
     int errLen = strcmp(errorMsg, "0");
-    if (errLen)
-    {
+    if (errLen) {
         printf("ContextCreate() API failed, error: %s\n", errorMsg);
     }
     ASSERT_EQ(errLen, 0);
@@ -68,15 +70,13 @@ TEST(ContextCreateTestCase, PositiveTestcaseCreateContextPub)
     freeContext(&contextConfig);
 }
 
-TEST(ContextCreateTestCase, PositiveTestcaseContextDestroy)
-{
+TEST(ContextCreateTestCase, PositiveTestcaseContextDestroy) {
     /*Test description:This testcase calls ContextDestroy
     and expects no crash.*/
     ContextDestroy();
 }
 
-TEST(ContextCreateTestCase, PositiveTestcaseSub)
-{
+TEST(ContextCreateTestCase, PositiveTestcaseSub) {
     /*Test description: This testcase calls ContextCreate API for 
     publisher and subscriber and do not expect any error 
     message.*/
@@ -88,8 +88,7 @@ TEST(ContextCreateTestCase, PositiveTestcaseSub)
     initContext(&contextConfigPub, certFile, privateFile,
                 trustFileArray, 1, "opcua://localhost:65006", pub);
     char *errorMsg = ContextCreate(contextConfigPub);
-    if (strcmp(errorMsg, "0"))
-    {
+    if (strcmp(errorMsg, "0")) {
         printf("ContextCreate() API failed, error: %s\n", errorMsg);
     }
 
@@ -97,8 +96,7 @@ TEST(ContextCreateTestCase, PositiveTestcaseSub)
                 trustFileArray, 1, "opcua://localhost:65006", sub);
     errorMsg = ContextCreate(contextConfigSub);
     int isError = strcmp(errorMsg, "0");
-    if (isError)
-    {
+    if (isError) {
         printf("ContextCreate() API failed, error: %s\n", errorMsg);
     }
     ASSERT_EQ(isError, 0);
@@ -108,8 +106,7 @@ TEST(ContextCreateTestCase, PositiveTestcaseSub)
 }
 
 /*
-TEST(ContextCreateTestCase, NegativeTestcasePubNullCryptoArgs)
-{
+TEST(ContextCreateTestCase, NegativeTestcasePubNullCryptoArgs) {
     struct ContextConfig contextConfig;
     char *trustFileArray[2] = {0x00};
     char *errorMsg = NULL;
@@ -143,8 +140,7 @@ TEST(ContextCreateTestCase, NegativeTestcasePubNullCryptoArgs)
                 trustFileArray, 1, "opcua://localhost:65005", pubsub);
     errorMsg = ContextCreate(contextConfig);
     int isError = strcmp(errorMsg, "0");
-    if (isError)
-    {
+    if (isError) {
         printf("ContextCreate() API failed, error: %s\n", errorMsg);
     }
     ASSERT_NE(isError, 0);
@@ -179,8 +175,7 @@ TEST(ContextCreateTestCase, NegativeTestcasePubNullCryptoArgs)
                 trustFileArray, 1, "opcua://localhost:65005", pub);
     errorMsg = ContextCreate(contextConfig);
     int isError = strcmp(errorMsg, "0");
-    if (isError)
-    {
+    if (isError) {
         printf("ContextCreate() API failed, error: %s\n", errorMsg);
     }
     ASSERT_EQ(isError, 0);
@@ -197,8 +192,7 @@ TEST(ContextCreateTestCase, NegativeTestcasePubNullCryptoArgs)
                 trustFileArray, 0, "opcua://localhost:65005", pub);
     errorMsg = ContextCreate(contextConfig);
     int isError = strcmp(errorMsg, "0");
-    if (isError)
-    {
+    if (isError) {
         printf("ContextCreate() API failed, error: %s\n", errorMsg);
     }
     ASSERT_EQ(isError, 0);
@@ -253,40 +247,37 @@ TEST(ContextCreateTestCase, NegativeTestcasePubNullCryptoArgs)
     freeContext(&contextConfigSub);
 }*/
 
-TEST(ContextCreateTestCase, NegativeTestcaseSubNullPrivteKeyFile)
-{
-    /*Test description: This testcase calls ContextCreate API for 
-    subscriber with NULL as private key file and expects error message
-    in return.*/
-    struct ContextConfig contextConfigPub;
-    struct ContextConfig contextConfigSub;
+// TEST(ContextCreateTestCase, NegativeTestcaseSubNullPrivteKeyFile) {
+//     /*Test description: This testcase calls ContextCreate API for
+//     subscriber with NULL as private key file and expects error message
+//     in return.*/
+//     struct ContextConfig contextConfigPub;
+//     struct ContextConfig contextConfigSub;
 
-    char *trustFileArray[2] = {0x00};
-    trustFileArray[0] = trustFile;
-    initContext(&contextConfigPub, certFile, privateFile,
-                trustFileArray, 1, "opcua://localhost:65006", pub);
-    char *errorMsg = ContextCreate(contextConfigPub);
-    int isError = strcmp(errorMsg, "0");
-    if (isError)
-    {
-        printf("ContextCreate() API failed for PUB, error: %s\n", errorMsg);
-    }
-    ASSERT_EQ(isError, 0);
+//     char *trustFileArray[2] = {0x00};
+//     trustFileArray[0] = trustFile;
+//     initContext(&contextConfigPub, certFile, privateFile,
+//                 trustFileArray, 1, "opcua://localhost:65014", pub);
+//     char *errorMsg = ContextCreate(contextConfigPub);
+//     int isError = strcmp(errorMsg, "0");
+//     if (isError) {
+//         printf("ContextCreate() API failed for PUB, error: %s\n", errorMsg);
+//     }
+//     ASSERT_EQ(isError, 0);
 
-    initContext(&contextConfigSub, certFile, NULL,
-                trustFileArray, 1, "opcua://localhost:65006", sub);
-    errorMsg = ContextCreate(contextConfigSub);
-    isError = strcmp(errorMsg, "0");
-    if (isError)
-    {
-        printf("ContextCreate() API failed for SUB, error: %s\n", errorMsg);
-    }
-    ASSERT_NE(isError, 0);
-    
-    ContextDestroy();
-    freeContext(&contextConfigPub);
-    freeContext(&contextConfigSub);
-}
+//     initContext(&contextConfigSub, certFile, NULL,
+//                 trustFileArray, 1, "opcua://localhost:65014", sub);
+//     errorMsg = ContextCreate(contextConfigSub);
+//     isError = strcmp(errorMsg, "0");
+//     if (isError) {
+//         printf("ContextCreate() API failed for SUB, error: %s\n", errorMsg);
+//     }
+//     ASSERT_NE(isError, 0);
+
+//     ContextDestroy();
+//     freeContext(&contextConfigPub);
+//     freeContext(&contextConfigSub);
+// }
 
 /*TEST(ContextCreateTestCase, NegativeTestcaseSubWrongNumOfTrustFiles) {
     // Test description: This testcase calls ContextCreate API for 
@@ -318,12 +309,11 @@ TEST(ContextCreateTestCase, NegativeTestcaseSubNullPrivteKeyFile)
     freeContext(&contextConfigSub);
 }*/
 
-TEST(ContextCreateTestCase, NegativeTestcaseWrongDirection)
-{
+TEST(ContextCreateTestCase, NegativeTestcaseWrongDirection) {
     /*Test description: This testcase calls ContextCreate API 
     for a wrong direction argument and expects the erro message 
     in return*/
-    // TODO:This test case need to be fixed.
+    // TODO(Varalakshmi.Ka@intel.com) :This test case need to be fixed.
     // The library should not allow directions
     // other than PUB/SUB
     struct ContextConfig contextConfig;
@@ -333,8 +323,7 @@ TEST(ContextCreateTestCase, NegativeTestcaseWrongDirection)
                 trustFileArray, 1, "opcua://localhost:65005", pubsub);
     char *errorMsg = ContextCreate(contextConfig);
     int isError = strcmp(errorMsg, "0");
-    if (isError)
-    {
+    if (isError) {
         printf("ContextCreate() API failed, error: %s\n", errorMsg);
     }
     ASSERT_EQ(isError, 0);
@@ -360,13 +349,13 @@ TEST(ContextCreateTestCase, NegativeTestcaseWrongDirection)
     }
 
     struct TopicConfig tempTopicConfig[10];
-    for(int i = 0; i< numOfTopic; i++){
+    for(int i = 0; i< numOfTopic; i++) {
         char topicName[10] = {0x00,};
         sprintf(topicName,"topic%d",i);
         initTopic(&tempTopicConfig[i],topicName, ns, dtype);
     }        
     
-    for(int i = 0; i< numOfTopic; i++){
+    for(int i = 0; i< numOfTopic; i++) {
         char result[100] = {0x00};
         sprintf(result, "topic-creation for:%s, Data:%d", tempTopicConfig[i].name, i);
         errorMsg = Publish(tempTopicConfig[i], NULL);
@@ -375,9 +364,9 @@ TEST(ContextCreateTestCase, NegativeTestcaseWrongDirection)
 
     ContextDestroy();
     freeContext(&contextConfigPub);
-    for(int i = 0; i< numOfTopic; i++){
+    for(int i = 0; i< numOfTopic; i++) {
         freeTopic(&tempTopicConfig[i]);
-    }
+    } 
 }*/
 
 /*TEST(ContextCreateTestCase, NegativeTestcaseSubscribeNullCallBack) { 
@@ -406,13 +395,13 @@ TEST(ContextCreateTestCase, NegativeTestcaseWrongDirection)
     }
     
     struct TopicConfig tempTopicConfig[10];
-    for(int i = 0; i< numOfTopic; i++){
+    for(int i = 0; i< numOfTopic; i++) {
         char topicName[10] = {0x00,};
         sprintf(topicName,"topic%d",i);
         initTopic(&tempTopicConfig[i],topicName, ns, dtype);
     }        
     
-    for(int i = 0; i< numOfTopic; i++){
+    for(int i = 0; i< numOfTopic; i++) {
         char result[100] = {0x00};
         sprintf(result, "topic-creation for:%s, Data:%d", tempTopicConfig[i].name, i);
         errorMsg = Publish(tempTopicConfig[i], result);
@@ -428,13 +417,12 @@ TEST(ContextCreateTestCase, NegativeTestcaseWrongDirection)
     ContextDestroy();
     freeContext(&contextConfigPub);
     freeContext(&contextConfigSub);
-    for(int i = 0; i< numOfTopic; i++){
+    for(int i = 0; i< numOfTopic; i++) {
         freeTopic(&tempTopicConfig[i]);
     }
 }*/
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }

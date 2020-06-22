@@ -30,55 +30,60 @@ logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s : %(levelname)s : \
                     %(name)s : [%(filename)s] :' +
                     '%(funcName)s : in line : [%(lineno)d] : %(message)s')
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
-subscribe_results = {}
-pubStop = True
-count = -1
-contextConfig = {
-                    "endpoint": "opcua://localhost:65003",
-                    "name": "StreamManager",
-                    "direction": "SUB",
-                    "topic": "classifier_results",
-                    "certFile": "/etc/ssl/opcua/opcua_client_certificate.der",
-                    "privateFile": "/etc/ssl/opcua/opcua_client_key.der",
-                    "trustFile": "/etc/ssl/ca/ca_certificate.der"
-                    }
+SUBSCRIBE_RESULTS = {}
+PUB_STOP = True
+COUNT = -1
+CONTEXT_CONFIG = {"endpoint": "opcua://localhost:65003",
+                  "name": "StreamManager",
+                  "direction": "SUB",
+                  "topic": "classifier_results",
+                  "certFile": "/etc/ssl/opcua/opcua_client_certificate.der",
+                  "privateFile": "/etc/ssl/opcua/opcua_client_key.der",
+                  "trustFile": "/etc/ssl/ca/ca_certificate.der"
+                 }
 
-topicConfig = {
-                    "ns": "StreamManager",
-                    "name": "classifier_results",
-                    "dType": "string"
-                    }
+TOPIC_CONFIG = {"ns": "StreamManager",
+                "name": "classifier_results",
+                "dType": "string"
+               }
 
 
 class TestDBA(unittest.TestCase):
-
-    def cbFunc(self, topic, msg):
-        global count
-        if(count > -1):
-            subscribe_results[str(count)] = msg
-        logger.info("Msg: {} received on topic: {}".format(msg, topic))
-        count = count + 1
+    """TestDBA class
+    """
+    @classmethod
+    def cb_func(cls, topic, msg):
+        """callback function
+        """
+        global COUNT
+        if COUNT > -1:
+            SUBSCRIBE_RESULTS[str(COUNT)] = msg
+        LOGGER.info("Msg: {} received on topic: {}".format(msg, topic))
+        COUNT = COUNT + 1
 
     def subscribe(self):
-        eisdbussub = databus(logger)
-        contextConfigsub = {
-                    "endpoint": "opcua://localhost:65003",
-                    "direction": "SUB",
-                    "certFile": "/etc/ssl/opcua/opcua_client_certificate.der",
-                    "privateFile": "/etc/ssl/opcua/opcua_client_key.der",
-                    "trustFile": "/etc/ssl/ca/ca_certificate.der"
-                    }
+        """subscribe function
+        """
+        eisdbussub = databus(LOGGER)
+        context_config_sub = {"endpoint": "opcua://localhost:65003",
+                              "direction": "SUB",
+                              "certFile": "/etc/ssl/opcua/opcua_\
+                              client_certificate.der",
+                              "privateFile": "/etc/ssl/opcua/opcua\
+                              _client_key.der",
+                              "trustFile": "/etc/ssl/ca/ca_certificate.der"
+                             }
 
-        eisdbussub.ContextCreate(contextConfigsub)
-        topicConfigs = []
-        topicConfigs.append(topicConfig)
-        eisdbussub.Subscribe(topicConfigs, 1, "START", self.cbFunc)
-        while pubStop:
+        eisdbussub.ContextCreate(context_config_sub)
+        topic_configs = []
+        topic_configs.append(TOPIC_CONFIG)
+        eisdbussub.Subscribe(topic_configs, 1, "START", self.cb_func)
+        while PUB_STOP:
             pass
 
-    def test_a_negativeSubTest(self):
+    def test_a_negative_sub_test(self):
         """
         TODO: This test case is crashing.Need fix.
         Negative test case for subscription.
@@ -88,23 +93,24 @@ class TestDBA(unittest.TestCase):
         """
 
         print("########## Testing Negative Sub Test ##########")
-        eisdbusnsub = databus(logger)
+        eisdbusnsub = databus(LOGGER)
 
-        contextConfig["direction"] = "SUB"
+        CONTEXT_CONFIG["direction"] = "SUB"
 
         try:
-            eisdbusnsub.ContextCreate(contextConfig)
-            topicConfigs = []
-            topicConfigs.append(topicConfig)
-            eisdbusnsub.Subscribe(topicConfigs, 1, "START", self.cbFunc)
-            while pubStop:
+            eisdbusnsub.ContextCreate(CONTEXT_CONFIG)
+            topic_configs = []
+            topic_configs.append(TOPIC_CONFIG)
+            eisdbusnsub.Subscribe(topic_configs, 1, "START", self.cb_func)
+            while PUB_STOP:
                 pass
-        except Exception as e:
+        except Exception as err:
             print("Error expected, Negative test case passed \
-                   with error:", str(e))
+                   with error:", str(err))
         print("########## Testing Negative Sub Test Completed ##########\n\n")
 
-    def test_b_negativeContextDestroy(self):
+    @classmethod
+    def test_b_negative_context_destroy(cls):
         """
         Negative test case for contextDestroy
         ContextDestroy should fail if context is not created.
@@ -112,12 +118,12 @@ class TestDBA(unittest.TestCase):
         """
 
         print("########## Testing Negative Context Destroy Test ##########")
-        eisdbusndes = databus(logger)
+        eisdbusndes = databus(LOGGER)
         try:
             eisdbusndes.ContextDestroy()
-        except Exception as e:
+        except Exception as err:
             print("Error is expected, Negative test case passed \
-                   with error:", str(e))
+                   with error:", str(err))
         print("########## Testing Negative Context Destroy \
               Test Completed ##########\n\n")
 
@@ -130,35 +136,35 @@ class TestDBA(unittest.TestCase):
         """
 
         print("########## Testing message pattern ##########")
-        global pubStop
+        global PUB_STOP
         publishcount = 0
-        eisdbuspat = databus(logger)
+        eisdbuspat = databus(LOGGER)
 
-        contextConfig["direction"] = "PUB"
-        eisdbuspat.ContextCreate(contextConfig)
-        eisdbuspat.Publish(topicConfig, "Hello Init")
+        CONTEXT_CONFIG["direction"] = "PUB"
+        eisdbuspat.ContextCreate(CONTEXT_CONFIG)
+        eisdbuspat.Publish(TOPIC_CONFIG, "Hello Init")
         sub_thread = threading.Thread(
             target=self.subscribe)
         sub_thread.start()
         time.sleep(5)
         for i in range(0, 3):
             result = "Hello {}".format(i)
-            eisdbuspat.Publish(topicConfig, result)
+            eisdbuspat.Publish(TOPIC_CONFIG, result)
             print("Published [" + result + "]")
             publishcount = i
             time.sleep(5)
 
-        pubStop = False
+        PUB_STOP = False
 
-        for key, value in subscribe_results.items():
+        for key, value in SUBSCRIBE_RESULTS.items():
             intkey = int(key)
-            if(intkey > -1):
+            if intkey > -1:
                 resultmap = "Hello {}".format(key)
-                if(value != resultmap):
+                if value != resultmap:
                     raise TestDBA("Values Published and received \
                                   are not equal\n")
 
-        if((publishcount + 1) != len(subscribe_results)):
+        if (publishcount + 1) != len(SUBSCRIBE_RESULTS):
             raise TestDBA("All the values published are not received, \
                          messages are dropped")
 
@@ -174,26 +180,27 @@ class TestDBA(unittest.TestCase):
         """
 
         print("########## Testing Subscribe Test ##########")
-        global pubStop
-        eisdbussub = databus(logger)
+        global PUB_STOP
+        eisdbussub = databus(LOGGER)
 
-        contextConfig["direction"] = "PUB"
-        eisdbussub.ContextCreate(contextConfig)
-        eisdbussub.Publish(topicConfig, "Hello Init")
+        CONTEXT_CONFIG["direction"] = "PUB"
+        eisdbussub.ContextCreate(CONTEXT_CONFIG)
+        eisdbussub.Publish(TOPIC_CONFIG, "Hello Init")
         sub_thread = threading.Thread(
             target=self.subscribe)
         sub_thread.start()
         time.sleep(5)
         for i in range(0, 3):
             result = "Hello {}".format(i)
-            eisdbussub.Publish(topicConfig, result)
+            eisdbussub.Publish(TOPIC_CONFIG, result)
             print("Published [" + result + "]")
             time.sleep(5)
 
-        pubStop = False
+        PUB_STOP = False
         print("########## Testing Subscribe Test Completed ##########\n\n")
 
-    def test_e_publish(self):
+    @classmethod
+    def test_e_publish(cls):
         """
         Test case for publish.
         Checks if server publishing points on a topic is successful.
@@ -201,19 +208,20 @@ class TestDBA(unittest.TestCase):
         """
 
         print("########## Testing Publish Test ##########")
-        eisdbuspub = databus(logger)
+        eisdbuspub = databus(LOGGER)
 
-        contextConfig["direction"] = "PUB"
-        eisdbuspub.ContextCreate(contextConfig)
+        CONTEXT_CONFIG["direction"] = "PUB"
+        eisdbuspub.ContextCreate(CONTEXT_CONFIG)
         for i in range(0, 3):
             result = "Hello {}".format(i)
-            eisdbuspub.Publish(topicConfig, result)
+            eisdbuspub.Publish(TOPIC_CONFIG, result)
             print("Published [" + result + "]")
             time.sleep(5)
 
         print("########## Testing Publish Test Completed ##########\n\n")
 
-    def test_f_init(self):
+    @classmethod
+    def test_f_init(cls):
         """
         Test case for init.
         Checks if the new instance creation to Databus is successful.
@@ -222,13 +230,14 @@ class TestDBA(unittest.TestCase):
 
         print("########## Testing Init Test ##########")
         try:
-            eisdbusinit = databus(logger)
-        except Exception as e:
-            logger.exception("Exception: {} in \
-                             creating {}".format(e, eisdbusinit))
+            eisdbusinit = databus(LOGGER)
+        except Exception as err:
+            LOGGER.exception("Exception: {} in \
+                             creating {}".format(err, eisdbusinit))
         print("########## Testing Init Test Completed ##########\n\n")
 
-    def test_g_createContext(self):
+    @classmethod
+    def test_g_create_context(cls):
         """
         Test case for context create.
         Checks if the context creation is succesful with different dirrection.
@@ -236,17 +245,18 @@ class TestDBA(unittest.TestCase):
         """
 
         print("########## Testing Context create Test ##########")
-        eisdbuscreate = databus(logger)
-        contextConfig["direction"] = "PUB"
+        eisdbuscreate = databus(LOGGER)
+        CONTEXT_CONFIG["direction"] = "PUB"
         try:
-            eisdbuscreate.ContextCreate(contextConfig)
-        except Exception as e:
-            logger.exception("Exception: {}".format(e))
+            eisdbuscreate.ContextCreate(CONTEXT_CONFIG)
+        except Exception as err:
+            LOGGER.exception("Exception: {}".format(err))
 
         print("########## Testing Context create Test \
               Completed ##########\n\n")
 
-    def test_h_contextDestroy(self):
+    @classmethod
+    def test_h_context_destroy(cls):
         """
         Test case for context destroy
         When the context is created and if we want to remove the existing
@@ -256,13 +266,13 @@ class TestDBA(unittest.TestCase):
         """
 
         print("########## Testing Context Destroy Test ##########")
-        eisdbusdes = databus(logger)
-        contextConfig["direction"] = "PUB"
-        eisdbusdes.ContextCreate(contextConfig)
+        eisdbusdes = databus(LOGGER)
+        CONTEXT_CONFIG["direction"] = "PUB"
+        eisdbusdes.ContextCreate(CONTEXT_CONFIG)
         try:
             eisdbusdes.ContextDestroy()
-        except Exception as e:
-            logger.exception("Exception: {}".format(e))
+        except Exception as err:
+            LOGGER.exception("Exception: {}".format(err))
 
         print("########## Testing Context Destroy \
               Test Completed ##########\n\n")

@@ -20,45 +20,45 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-import logging
-from util.log import configure_logging, LOG_LEVELS
 import open62541W
 
 # TODO: This brings in a limitation of multiple different contexts
 # if one wants to receive the callbacks registered for different
 # streams from a single process. Need to implement this better
-func = None
-gQueue = None
+FUNC = None
+G_QUEUE = None
 
 
-def cbFunc(topic, msg):
+def cb_func(topic, msg):
+    """callback function
+    """
     # TODO: Find the root cause for this behavior and fix it
     # This is to address extra character that seems to come in the json
     # formatted `msg` C string in pyx callback
     # Here, number 123 and 125 refers to ascii values of "{" and "}"
     # respectively
     if msg[0] == 123 and msg[-1] != 125:
-        lastBraceIndex = msg.rfind(125)
-        msgByteArr = bytearray(msg)
+        last_brace_index = msg.rfind(125)
+        msg_byte_arr = bytearray(msg)
         # This is to ignore the 2 additional hex chars eg. \x01\x02
-        msg = bytes(msgByteArr[:lastBraceIndex+1])
+        msg = bytes(msg_byte_arr[:last_brace_index+1])
     msg = msg.decode("utf-8")
     topic = topic.decode("utf-8")
-    gQueue.put({"topic": topic, "data": msg})
+    G_QUEUE.put({"topic": topic, "data": msg})
 
 
-class databOpcua:
+class DatabOpcua:
     '''Creates and manages a databus OPCUA context'''
 
     def __init__(self, log):
         self.logger = log
         self.direction = None
-        self.devMode = False
+        self.dev_mode = False
 
-    def createContext(self, contextConfig):
+    def create_context(self, context_config):
         '''Creates a new messagebus context
         Arguments:
-            contextConfig<dict>: Messagebus params to create the context
+            context_config<dict>: Messagebus params to create the context
                 <fields>
                 "direction": PUB/SUB/NONE - Mutually exclusive
                 "name": context namespace (PUB/SUB context namespaces
@@ -67,100 +67,98 @@ class databOpcua:
                     <format> proto://host:port/, proto://host:port/.../
                     <examples>
                     OPCUA -> opcua://0.0.0.0:65003
-                "certFile"   : server/client certificate file
-                "privateFile": server/client private key file
-                "trustFile"  : ca cert used to sign server/client cert
+                "cert_file"   : server/client certificate file
+                "private_file": server/client private key file
+                "trust_file"  : ca cert used to sign server/client cert
         Return/Exception: Will raise Exception in case of errors'''
-        certFile = contextConfig["certFile"]
-        privateFile = contextConfig["privateFile"]
-        trustFiles = [contextConfig["trustFile"]]
+        cert_file = context_config["cert_file"]
+        private_file = context_config["private_file"]
+        trust_files = [context_config["trust_file"]]
 
-        if not certFile or not privateFile or not trustFiles:
-            self.devMode = True
+        if not cert_file or not private_file or not trust_files:
+            self.dev_mode = True
 
-        self.direction = contextConfig["direction"]
+        self.direction = context_config["direction"]
         # Create default endpoint protocol for opcua from given endpoint
-        endpoint = contextConfig["endpoint"]
+        endpoint = context_config["endpoint"]
 
-        errMsg = open62541W.ContextCreate(endpoint,
-                                          self.direction,
-                                          contextConfig["certFile"],
-                                          contextConfig["privateFile"],
-                                          [contextConfig["trustFile"]])
-        pyErrorMsg = errMsg.decode()
-        if pyErrorMsg != "0":
+        err_msg = open62541W.ContextCreate(endpoint,
+                                           self.direction,
+                                           context_config["cert_file"],
+                                           context_config["private_file"],
+                                           [context_config["trust_file"]])
+        py_error_msg = err_msg.decode()
+        if py_error_msg != "0":
             self.logger.error("ContextCreate() API failed!")
-            raise Exception(pyErrorMsg)
+            raise Exception(py_error_msg)
 
-    def startTopic(self, topicConfig):
+    def start_topic(self, topic_config):
         '''
         Topic creation for the messagebus
         Arguments:
-            topicConfig<dict>: Publish topic parameters
+            topic_config<dict>: Publish topic parameters
                 <fields>
                 "name": Topic name (in hierarchical form with '/' as delimiter)
                     <example> "root/level1/level2/level3"
                 "type": Data type associated with the topic
         Return/Exception: Will raise Exception in case of errors
         '''
-        pass
 
-    def send(self, topicConfig, data):
+    def send(self, topic_config, data):
         '''
         Publish data on the topic
         Arguments:
-            topicConfig: topicConfig for opcua, with topic name & it's type
+            topic_config: topic_config for opcua, with topic name & it's type
             data: actual message
         Return/Exception: Will raise Exception in case of errors
         '''
 
         if self.direction == "PUB":
             # TODO: Support for different data types
-            if type(data) == str:
+            if isinstance(data, str):
                 try:
-                    errMsg = open62541W.Publish(topicConfig, data)
-                    pyErrorMsg = errMsg.decode()
-                    if pyErrorMsg != "0":
+                    err_msg = open62541W.Publish(topic_config, data)
+                    py_error_msg = err_msg.decode()
+                    if py_error_msg != "0":
                         self.logger.error("Publish() API failed!")
-                        raise Exception(pyErrorMsg)
+                        raise Exception(py_error_msg)
                 except Exception:
                     self.logger.error("{} Failure!!!".format(
-                                                             self.send.__name__
-                                                            ))
+                        self.send.__name__))
                     raise
             else:
                 raise Exception("Wrong Data Type!!!")
         else:
             raise Exception("Wrong Bus Direction!!!")
 
-    def receive(self, topicConfigs, topicConfigCount, trig, queue):
+    def receive(self, topic_configs, topic_config_count, trig, queue):
         '''Subscribe data from the topic
         Arguments:
-            topicConfigs: topicConfigs for opcua, with topic name & it's type
-            topicConfigCount: length of topicConfigs dict
+            topic_configs: topic_configs for opcua, with topic name & it's type
+            topic_config_count: length of topic_configs dict
             trig: START/STOP to start/stop the subscription
             queue: A queue to which the message should be pushed on arrival
         Return/Exception: Will raise Exception in case of errors'''
 
         if (self.direction == "SUB") and (trig == "START"):
-            global gQueue
-            gQueue = queue
-            errMsg = open62541W.Subscribe(topicConfigs, topicConfigCount, trig,
-                                          cbFunc)
-            pyErrorMsg = errMsg.decode()
-            if pyErrorMsg != "0":
+            global G_QUEUE
+            G_QUEUE = queue
+            err_msg = open62541W.Subscribe(topic_configs, topic_config_count, trig,
+                                           cb_func)
+            py_error_msg = err_msg.decode()
+            if py_error_msg != "0":
                 self.logger.error("Subscribe() API failed!")
-                raise Exception(pyErrorMsg)
+                raise Exception(py_error_msg)
         elif (self.direction == "SUB") and (trig == "STOP"):
             # TODO: To be implemented - stop subscription
             pass
         else:
             raise Exception("Wrong Bus Direction or Trigger!!!")
 
-    def stopTopic(self, topic):
+    def stop_topic(self, topic):
         '''Delete topic
         Arguments:
-            topicConfig<dict>: Topic parameters
+            topic_config<dict>: Topic parameters
                 <fields>
                 "name": Topic name
                 "type": Data type associated with the topic
@@ -188,12 +186,12 @@ class databOpcua:
         #    obj_itr.delete()
         return
 
-    def destroyContext(self):
+    def destroy_context(self):
         '''Destroy the messagebus context'''
         try:
             open62541W.ContextDestroy()
             self.logger.debug("OPCUA context is Terminated")
         except Exception:
             self.logger.error("{} Failure!!!".format(
-                self.destroyContext.__name__))
+                self.destroy_context.__name__))
             raise
