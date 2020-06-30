@@ -53,10 +53,11 @@ services:
       # Eg: Stream cfg for
       # IPC: zmq_ipc, <absolute_socket_directory_path>
       # TPC: zmq_tcp, <publisher_host>:<publisher_port>
-      PubTopics: "cam_serial1_results,cam_serial2_results"
+      PubTopics: "opcua_cam_serial1_results,opcua_cam_serial2_results,opcua_point_classifier_results"
       OpcuaExportCfg: "opcua,localhost:65003"
-      SubTopics: "VideoAnalytics/camera1_stream_results"
+      SubTopics: "VideoAnalytics/camera1_stream_results,InfluxDBConnector/point_classifier_results"
       camera1_stream_results_cfg: "zmq_tcp,127.0.0.1:65013"
+      point_classifier_results_cfg: "zmq_tcp,127.0.0.1:65016"
     volumes:
       - "vol_eis_socket:${SOCKET_DIR}"
       - "vol_opcua:/tmp"
