@@ -31,6 +31,7 @@ services:
       args:
         EIS_VERSION: ${EIS_VERSION}
         DOCKER_REGISTRY: ${DOCKER_REGISTRY}
+    read_only: true
     image: ${DOCKER_REGISTRY}ia_opcua_export:${EIS_VERSION}
     container_name: ia_opcua_export
     hostname: ia_opcua_export
@@ -58,11 +59,19 @@ services:
       camera1_stream_results_cfg: "zmq_tcp,127.0.0.1:65013"
     volumes:
       - "vol_eis_socket:${SOCKET_DIR}"
+      - "vol_opcua:/tmp"
     user: ${EIS_UID}
     secrets:
       - ca_etcd
       - etcd_OpcuaExport_cert
       - etcd_OpcuaExport_key
+
+volumes:
+  vol_opcua:
+    driver: local
+    driver_opts:
+      type: tmpfs
+      device: tmpfs
 
 secrets:
   etcd_OpcuaExport_cert:
