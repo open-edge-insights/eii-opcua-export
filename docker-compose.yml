@@ -37,6 +37,7 @@ services:
     hostname: ia_opcua_export
     network_mode: host
     restart: unless-stopped
+    ipc: "none"
     environment:
       AppName: "OpcuaExport"
       DEV_MODE: ${DEV_MODE}
