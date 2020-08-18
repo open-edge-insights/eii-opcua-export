@@ -1,6 +1,6 @@
 # `OpcuaExport`
 
-OpcuaExoprt service subscribes to classified results from EIS message bus(VideoAnalytics/TimeSeries) and starts publishing meta data to all the topics(PubTopics) and the same metadata is received by opcua clients.
+OpcuaExoprt service subscribes to classified results from EIS message bus(VideoAnalytics) and starts publishing meta data to opcua clients
 
 
 ## `Configuration`
@@ -9,16 +9,7 @@ For more details on Etcd and MessageBus endpoint configuration, visit [Etcd_Secr
 
 ## `Installation`
 
-* Follow [provision/README.md](../README#provision-eis.md) for EIS provisioning
-  if not done already as part of EIS stack setup
-
-* Run OpcuaExport
-
-	1. Build and Run OpcuaExport as container
-        ```
-        $ cd [repo]/build
-        $ docker-compose up --build ia_opcua_export
-       ```
+* Follow steps 1-5 of main [EIS README](../README.md) if not done already as part of EIS stack setup
 
 * Please use below steps to generate opcua client certificates before running test client subscriber for production mode.
    1. Append following key in `certs' in [build/provision/config/x509_cert_config.json](../build/provision/config/x509_cert_config.json) file.
@@ -31,7 +22,7 @@ For more details on Etcd and MessageBus endpoint configuration, visit [Etcd_Secr
                 }
         ```
 
-    2. Re-provision EIS using below command in < EIS Repo >/build/provision folder to reprovision EIS.
+    2. Re-provision EIS using below command in `[WORKDIR]/IEdgeInsights/build/provision` folder to reprovision EIS.
 
         ```
         $ sudo ./provision_eis.sh <path_to_eis_docker_compose_file>
