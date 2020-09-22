@@ -60,8 +60,8 @@ TEST(ContextCreateTestCase, NegativeTestcaseSubToWrongTopic) {
     /*Test description: This is test case which verifies
     the subscription do not for a topic which is not created.
     */
-    // TODO(Varalakshmi.Ka@intel.com): This test case is currenly passing.
-    // Howevere it should fail. It needs fixes
+    // This test case is currenly passing
+    // However it should fail. It needs fixes
 
     struct ContextConfig contextConfigPub;
     struct ContextConfig contextConfigSub;

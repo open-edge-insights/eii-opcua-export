@@ -313,7 +313,7 @@ TEST(ContextCreateTestCase, NegativeTestcaseWrongDirection) {
     /*Test description: This testcase calls ContextCreate API 
     for a wrong direction argument and expects the erro message 
     in return*/
-    // TODO(Varalakshmi.Ka@intel.com) :This test case need to be fixed.
+    // This test case needs to be fixed.
     // The library should not allow directions
     // other than PUB/SUB
     struct ContextConfig contextConfig;
