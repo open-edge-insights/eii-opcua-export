@@ -23,16 +23,15 @@ SOFTWARE.
 package main
 
 import (
+	eiscfgmgr "ConfigMgr/eisconfigmgr"
 	eismsgbus "EISMessageBus/eismsgbus"
-	configmgr "ConfigManager"
 	databus "IEdgeInsights/OpcuaExport/OpcuaBusAbstraction/go"
-	util "IEdgeInsights/common/util"
-	envconfig "EnvConfig"
+
+	"encoding/base64"
 	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
-	"strconv"
 	"strings"
 
 	"github.com/golang/glog"
@@ -50,16 +49,11 @@ type opcuaBus struct {
 	pubTopics  []string
 }
 
-// struct for messageBus related configurations
-type messageBus struct {
-	subTopics []string
-}
-
 // OpcuaExport struct with both opcuaBus and messageBus configurations
 type OpcuaExport struct {
 	opcuaBus     opcuaBus
-	msgBus       messageBus
 	devMode      bool
+	configMgr    *eiscfgmgr.ConfigMgr
 	cfgMgrConfig map[string]string
 }
 
@@ -67,20 +61,34 @@ type OpcuaExport struct {
 func NewOpcuaExport() (opcuaExport *OpcuaExport, err error) {
 	var opcuaContext map[string]string
 	opcuaExport = &OpcuaExport{}
-	devMode, err := strconv.ParseBool(os.Getenv("DEV_MODE"))
+	opcuaExport.configMgr, err = eiscfgmgr.ConfigManager()
+	if err != nil {
+		glog.Fatal("Config Manager initialization failed...")
+	}
+
+	opcuaExport.devMode, err = opcuaExport.configMgr.IsDevMode()
 	if err != nil {
 		glog.Errorf("string to bool conversion error")
 		os.Exit(1)
 	}
-	opcuaExport.devMode = devMode
-	opcuaExport.opcuaBus.pubTopics = envconfig.GetTopics("PUB")
-	opcuaExport.msgBus.subTopics = envconfig.GetTopics("SUB")
-	pubConfigList := strings.Split(os.Getenv("OpcuaExportCfg"), ",")
-	endpoint := pubConfigList[0] + "://" + pubConfigList[1]
 
-	// TODO: add support for both prod and dev mode
-	appName := os.Getenv("AppName")
-	opcuaExport.cfgMgrConfig = util.GetCryptoMap(appName)
+	appConfig, err := opcuaExport.configMgr.GetAppConfig()
+	if err != nil {
+		fmt.Println("Error found to get app config for Opcua:", err)
+	}
+
+	//creating a list of string from a list of interface.
+	interfaceList := appConfig["OpcuaDatabusTopics"].([]interface{})
+	lenList := len(interfaceList)
+	publishTopics := make([]string, lenList)
+	for index, data := range interfaceList {
+		publishTopics[index] = data.(string)
+	}
+	opcuaExport.opcuaBus.pubTopics = publishTopics
+
+	OpcuaExportCfg := appConfig["OpcuaExportCfg"].(string)
+	pubConfigList := strings.Split(OpcuaExportCfg, ",")
+	endpoint := pubConfigList[0] + "://" + pubConfigList[1]
 
 	opcuaContext = map[string]string{
 		"direction": "PUB",
@@ -91,23 +99,17 @@ func NewOpcuaExport() (opcuaExport *OpcuaExport, err error) {
 	opcuaContext["trustFile"] = ""
 
 	opcuaCerts := []string{"/tmp/opcua_server_cert.der", "/tmp/opcua_server_key.der", "/tmp/ca_cert.der"}
-	opcuaExportKeys := []string{"/OpcuaExport/server_cert", "/OpcuaExport/server_key", "/OpcuaExport/ca_cert"}
+	opcuaExportKeys := []string{"server_cert", "server_key", "ca_cert"}
 
 	if !opcuaExport.devMode {
-
-		cfgMgr := configmgr.Init("etcd", opcuaExport.cfgMgrConfig)
-		if cfgMgr == nil {
-			glog.Fatalf("Config Manager initialization failed...")
-		}
-
 		i := 0
 		for _, opcuaExportKey := range opcuaExportKeys {
-			opcuaCertFile, err := cfgMgr.GetConfig(opcuaExportKey)
+			opcuaCertFile, err := base64.StdEncoding.DecodeString(appConfig[opcuaExportKey].(string))
 			if err != nil {
-				glog.Fatal(err)
+				glog.Errorf("OPCUA decoding of cert files failed: %v", err)
+				return opcuaExport, err
 			}
-			certFile := []byte(opcuaCertFile)
-			err = ioutil.WriteFile(opcuaCerts[i], certFile, 0644)
+			err = ioutil.WriteFile(opcuaCerts[i], opcuaCertFile, 0644)
 			i++
 		}
 		opcuaContext["certFile"] = opcuaCerts[0]
@@ -144,12 +146,14 @@ func NewOpcuaExport() (opcuaExport *OpcuaExport, err error) {
 func (opcuaExport *OpcuaExport) Subscribe() {
 	glog.Infof("-- Initializing message bus context")
 
-	for _, subTopicCfg := range opcuaExport.msgBus.subTopics {
-		msgBusConfig := envconfig.GetMessageBusConfig(subTopicCfg, "SUB", opcuaExport.devMode,
-			opcuaExport.cfgMgrConfig)
-		subTopicCfg := strings.Split(subTopicCfg, "/")
-		go worker(opcuaExport, msgBusConfig, subTopicCfg[1])
+	numOfSubscriber, _ := opcuaExport.configMgr.GetNumSubscribers()
+	for i := 0; i < numOfSubscriber; i++ {
+		subctx, _ := opcuaExport.configMgr.GetSubscriberByIndex(i)
+		subTopics := subctx.GetTopics()
+		config, _ := subctx.GetMsgbusConfig()
+		go worker(opcuaExport, config, subTopics[0])
 	}
+
 }
 
 func worker(opcuaExport *OpcuaExport, config map[string]interface{}, topic string) {

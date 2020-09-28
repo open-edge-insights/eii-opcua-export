@@ -43,8 +43,7 @@ COPY --from=common ${GO_WORK_DIR}/common/cmake ${GO_WORK_DIR}/common/cmake
 COPY --from=common /usr/local/lib /usr/local/lib
 COPY --from=common /usr/local/include /usr/local/include
 COPY --from=common ${GO_WORK_DIR}/../EISMessageBus ${GO_WORK_DIR}/../EISMessageBus
-COPY --from=common ${GO_WORK_DIR}/../ConfigManager ${GO_WORK_DIR}/../ConfigManager
-COPY --from=common ${GO_WORK_DIR}/../EnvConfig ${GO_WORK_DIR}/../EnvConfig
+COPY --from=common ${GO_WORK_DIR}/../ConfigMgr ${GO_WORK_DIR}/../ConfigMgr
 
 ENV CPATH $GO_WORK_DIR/OpcuaExport/OpcuaBusAbstraction/c/open62541/src
 ENV CFLAGS -std=c99 -g -fpic -I../include -I../../
