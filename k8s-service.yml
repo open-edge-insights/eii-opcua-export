@@ -50,7 +50,7 @@ spec:
     spec:
       containers:
       - name: ia-opcua-export
-        image: ia_opcua_export:${EIS_VERSION}
+        image: ${DOCKER_REGISTRY}ia_opcua_export:${EIS_VERSION}
         securityContext:
           privileged: true
         volumeMounts:
