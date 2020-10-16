@@ -7,7 +7,7 @@
     "interfaces" : {
         "Subscribers": [
             {
-                "Name": "camera1_stream_results",
+                "Name": "defaultVA",
                 "Type": "zmq_tcp",
                 "EndPoint": "127.0.0.1:65013",
                 "PublisherAppName": "VideoAnalytics",
@@ -16,7 +16,7 @@
                 ]
             },
             {
-                "Name": "point_classifier_results",
+                "Name": "defaultInflux",
                 "Type": "zmq_tcp",
                 "EndPoint": "127.0.0.1:65016",
                 "PublisherAppName": "InfluxDBConnector",

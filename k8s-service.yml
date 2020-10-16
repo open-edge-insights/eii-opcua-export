@@ -86,16 +86,10 @@ spec:
           value: "/run/secrets/etcd_OpcuaExport_cert/OpcuaExport_client_certificate.pem"
         - name: CONFIGMGR_KEY
           value: "/run/secrets/etcd_OpcuaExport_key/OpcuaExport_client_key.pem"
-        - name: PubTopics
-          value: "opcua_cam_serial1_results,opcua_cam_serial2_results,opcua_point_classifier_results"
-        - name: OpcuaExportCfg
-          value: "opcua,0.0.0.0:65003"
-        - name: SubTopics
-          value: "VideoAnalytics/camera1_stream_results,InfluxDBConnector/point_classifier_results"
-        - name: camera1_stream_results_cfg
-          value: "zmq_tcp,videoanalytics:65013"
-        - name: point_classifier_results_cfg
-          value: "zmq_tcp,influxdbconnector:65016"
+        - name: SUBSCRIBER_defaultVA_ENDPOINT
+          value: "videoanalytics:65013"
+        - name: SUBSCRIBER_defaultInflux_ENDPOINT
+          value: "influxdbconnector:65016"
 
       volumes:
       - name: eis-socket
