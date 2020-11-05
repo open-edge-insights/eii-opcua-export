@@ -66,6 +66,8 @@ func NewOpcuaExport() (opcuaExport *OpcuaExport, err error) {
 		glog.Fatal("Config Manager initialization failed...")
 	}
 
+	defer opcuaExport.configMgr.Destroy()
+
 	opcuaExport.devMode, err = opcuaExport.configMgr.IsDevMode()
 	if err != nil {
 		glog.Errorf("string to bool conversion error")
@@ -148,12 +150,20 @@ func (opcuaExport *OpcuaExport) Subscribe() {
 
 	numOfSubscriber, _ := opcuaExport.configMgr.GetNumSubscribers()
 	for i := 0; i < numOfSubscriber; i++ {
-		subctx, _ := opcuaExport.configMgr.GetSubscriberByIndex(i)
+		subctx, err := opcuaExport.configMgr.GetSubscriberByIndex(i)
+		if err != nil {
+			glog.Errorf("Failed to get subscriber context : %v", err)
+			return
+		}
+
+		defer subctx.Destroy()
+
 		subTopics, err := subctx.GetTopics()
 		if err != nil {
 			glog.Errorf("Failed to fetch topics : %v", err)
 			return
 		}
+
 		config, err := subctx.GetMsgbusConfig()
 		if err != nil {
 			glog.Errorf("Failed to fetch msgbus config : %v", err)
