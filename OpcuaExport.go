@@ -66,8 +66,6 @@ func NewOpcuaExport() (opcuaExport *OpcuaExport, err error) {
 		glog.Fatal("Config Manager initialization failed...")
 	}
 
-	defer opcuaExport.configMgr.Destroy()
-
 	opcuaExport.devMode, err = opcuaExport.configMgr.IsDevMode()
 	if err != nil {
 		glog.Errorf("string to bool conversion error")
@@ -147,6 +145,7 @@ func NewOpcuaExport() (opcuaExport *OpcuaExport, err error) {
 // Subscribe function spawns worker thread to subscribe to EIS message bus and starts publishing data to opcua
 func (opcuaExport *OpcuaExport) Subscribe() {
 	glog.Infof("-- Initializing message bus context")
+	defer opcuaExport.configMgr.Destroy()
 
 	numOfSubscriber, _ := opcuaExport.configMgr.GetNumSubscribers()
 	for i := 0; i < numOfSubscriber; i++ {
@@ -155,8 +154,6 @@ func (opcuaExport *OpcuaExport) Subscribe() {
 			glog.Errorf("Failed to get subscriber context : %v", err)
 			return
 		}
-
-		defer subctx.Destroy()
 
 		subTopics, err := subctx.GetTopics()
 		if err != nil {
@@ -170,8 +167,9 @@ func (opcuaExport *OpcuaExport) Subscribe() {
 			return
 		}
 		go worker(opcuaExport, config, subTopics[0])
+		subctx.Destroy()
 	}
-
+	
 }
 
 func worker(opcuaExport *OpcuaExport, config map[string]interface{}, topic string) {
