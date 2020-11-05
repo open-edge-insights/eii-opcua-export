@@ -149,8 +149,16 @@ func (opcuaExport *OpcuaExport) Subscribe() {
 	numOfSubscriber, _ := opcuaExport.configMgr.GetNumSubscribers()
 	for i := 0; i < numOfSubscriber; i++ {
 		subctx, _ := opcuaExport.configMgr.GetSubscriberByIndex(i)
-		subTopics := subctx.GetTopics()
-		config, _ := subctx.GetMsgbusConfig()
+		subTopics, err := subctx.GetTopics()
+		if err != nil {
+			glog.Errorf("Failed to fetch topics : %v", err)
+			return
+		}
+		config, err := subctx.GetMsgbusConfig()
+		if err != nil {
+			glog.Errorf("Failed to fetch msgbus config : %v", err)
+			return
+		}
 		go worker(opcuaExport, config, subTopics[0])
 	}
 
