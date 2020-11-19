@@ -58,4 +58,7 @@ RUN cd ${CPATH} && cp libopen62541W.so /usr/local/lib
 COPY . ./OpcuaExport/
 
 RUN cd OpcuaExport && go build OpcuaExport.go
+
+HEALTHCHECK NONE
+
 ENTRYPOINT ["./OpcuaExport/OpcuaExport"]
