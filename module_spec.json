@@ -2,7 +2,7 @@
     "SchemaVersion": "0.2",
     "Runtime": "docker",
     "RuntimeOptions": {
-        "ContainerImage": "ia_opcua_export:$EIS_VERSION"
+        "ContainerImage": "${idx:ia_opcua_export:$EIS_VERSION}"
     },
     "DataStore": {
         "Protocol": "DIRECT",
