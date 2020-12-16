@@ -18,7 +18,7 @@
             {
                 "Name": "defaultInflux",
                 "Type": "zmq_tcp",
-                "EndPoint": "127.0.0.1:65016",
+                "EndPoint": "127.0.0.1:65034",
                 "PublisherAppName": "InfluxDBConnector",
                 "Topics": [
                     "point_classifier_results"
