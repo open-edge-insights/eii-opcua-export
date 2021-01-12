@@ -5,7 +5,8 @@ OpcuaExoprt service subscribes to classified results from EIS message bus(VideoA
 
 ## `Configuration`
 
-For more details on Etcd and MessageBus endpoint configuration, visit [Etcd_Secrets_and_MsgBus_Endpoint_Configuration](../Etcd_Secrets_and_MsgBus_Endpoint_Configuration.md).
+For more details on Etcd secrets and messagebus endpoint configuration, visit [Etcd_Secrets_Configuration.md](../Etcd_Secrets_Configuration.md) and
+[MessageBus Configuration](../common/libs/ConfigMgr/README.md#interfaces) respectively.
 
 ## `Installation`
 
