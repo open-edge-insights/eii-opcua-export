@@ -57,7 +57,7 @@ func cbFunc(topic string, msg interface{}) {
 }
 
 func sub() {
-	eisDatabsub, err := databus.NewDataBus()
+	eiiDatabsub, err := databus.NewDataBus()
 
 	if err != nil {
 		panic(err)
@@ -72,13 +72,13 @@ func sub() {
 		"topic":       "classifier_results",
 	}
 
-	err = eisDatabsub.ContextCreate(contextConfigsub)
+	err = eiiDatabsub.ContextCreate(contextConfigsub)
 	if err != nil {
 		panic(err)
 	}
 
 	topicConfigArray := []map[string]string{topicConfig}
-	err = eisDatabsub.Subscribe(topicConfigArray, 1, "START", cbFunc)
+	err = eiiDatabsub.Subscribe(topicConfigArray, 1, "START", cbFunc)
 	if err != nil {
 		panic(err)
 	}
@@ -97,7 +97,7 @@ func TestNegativeSub(t *testing.T) {
 
 	fmt.Println("################## Sub Negative test case ###################")
 
-	eisDatabnsub, err := databus.NewDataBus()
+	eiiDatabnsub, err := databus.NewDataBus()
 
 	if err != nil {
 		panic(err)
@@ -105,13 +105,13 @@ func TestNegativeSub(t *testing.T) {
 
 	contextConfig["direction"] = "SUB"
 
-	err = eisDatabnsub.ContextCreate(contextConfig)
+	err = eiiDatabnsub.ContextCreate(contextConfig)
 	if err == nil {
 		panic(err)
 	}
 
 	topicConfigArray := []map[string]string{topicConfig}
-	err = eisDatabnsub.Subscribe(topicConfigArray, 1, "START", cbFunc)
+	err = eiiDatabnsub.Subscribe(topicConfigArray, 1, "START", cbFunc)
 	if err == nil {
 		panic(err)
 	}
@@ -124,9 +124,9 @@ func TestNegativeSub(t *testing.T) {
 // Expected Results: Error on destroying a context.
 func TestNegativeContextDestroy(t *testing.T) {
 	fmt.Println("################## DataBus Negative Context Destroy Test###################")
-	eisDatabndes, err := databus.NewDataBus()
+	eiiDatabndes, err := databus.NewDataBus()
 
-	err = eisDatabndes.ContextDestroy()
+	err = eiiDatabndes.ContextDestroy()
 
 	if err == nil {
 		panic(err)
@@ -142,7 +142,7 @@ func TestPattern(t *testing.T) {
 
 	publishcount := 0
 	var keycount int
-	eisDatabsub, err := databus.NewDataBus()
+	eiiDatabsub, err := databus.NewDataBus()
 
 	if err != nil {
 		panic(err)
@@ -150,17 +150,17 @@ func TestPattern(t *testing.T) {
 
 	contextConfig["direction"] = "PUB"
 
-	err = eisDatabsub.ContextCreate(contextConfig)
+	err = eiiDatabsub.ContextCreate(contextConfig)
 	if err != nil {
 		panic(err)
 	}
 
-	eisDatabsub.Publish(topicConfig, "hello init")
+	eiiDatabsub.Publish(topicConfig, "hello init")
 	go sub()
 	time.Sleep(10 * time.Second)
 	for i := 0; i < 4; i++ {
 		resultPub := fmt.Sprintf("%s %d", "Hello ", i)
-		err = eisDatabsub.Publish(topicConfig, resultPub)
+		err = eiiDatabsub.Publish(topicConfig, resultPub)
 		if err != nil {
 			panic(err)
 		}
@@ -197,7 +197,7 @@ func TestSub(t *testing.T) {
 
 	fmt.Println("##################Sub alone Test###################")
 
-	eisDatabpub, err := databus.NewDataBus()
+	eiiDatabpub, err := databus.NewDataBus()
 
 	if err != nil {
 		panic(err)
@@ -205,18 +205,18 @@ func TestSub(t *testing.T) {
 
 	contextConfig["direction"] = "PUB"
 
-	err = eisDatabpub.ContextCreate(contextConfig)
+	err = eiiDatabpub.ContextCreate(contextConfig)
 	if err != nil {
 		panic(err)
 	}
 
-	eisDatabpub.Publish(topicConfig, "Hello Init")
+	eiiDatabpub.Publish(topicConfig, "Hello Init")
 	fmt.Print("Published result: Hello Init")
 	go sub()
 	time.Sleep(5 * time.Second)
 	for i := 0; i < 5; i++ {
 		result := fmt.Sprintf("%s %d", "Hello ", i)
-		err = eisDatabpub.Publish(topicConfig, result)
+		err = eiiDatabpub.Publish(topicConfig, result)
 		if err != nil {
 			panic(err)
 		}
@@ -234,7 +234,7 @@ func TestSub(t *testing.T) {
 // Test for Publish API.
 func TestPub(t *testing.T) {
 	fmt.Println("################## Pub alone Test ###################")
-	eisDatabpublish, err := databus.NewDataBus()
+	eiiDatabpublish, err := databus.NewDataBus()
 
 	if err != nil {
 		panic(err)
@@ -242,7 +242,7 @@ func TestPub(t *testing.T) {
 
 	contextConfig["direction"] = "PUB"
 
-	err = eisDatabpublish.ContextCreate(contextConfig)
+	err = eiiDatabpublish.ContextCreate(contextConfig)
 	if err != nil {
 		panic(err)
 	}
@@ -252,7 +252,7 @@ func TestPub(t *testing.T) {
 		"type": "string",
 	}
 	result := fmt.Sprintf("%s", "Hello Init ")
-	err = eisDatabpublish.Publish(topicConfig, result)
+	err = eiiDatabpublish.Publish(topicConfig, result)
 	if err != nil {
 		panic(err)
 	}
@@ -266,8 +266,8 @@ func TestPub(t *testing.T) {
 // Test for NewDataBus Api.
 func TestInit(t *testing.T) {
 	fmt.Println("################## DataBus Init Test###################")
-	eisDatabInit, err := databus.NewDataBus()
-	fmt.Println(reflect.TypeOf(eisDatabInit))
+	eiiDatabInit, err := databus.NewDataBus()
+	fmt.Println(reflect.TypeOf(eiiDatabInit))
 
 	if err != nil {
 		panic(err)
@@ -280,11 +280,11 @@ func TestInit(t *testing.T) {
 // 	Test for ContextCreate API.
 func TestCreateContext(t *testing.T) {
 	fmt.Println("################## DataBus Context Create Test###################")
-	eisDatabContextCreate, err := databus.NewDataBus()
+	eiiDatabContextCreate, err := databus.NewDataBus()
 
 	contextConfig["direction"] = "PUB"
 
-	err = eisDatabContextCreate.ContextCreate(contextConfig)
+	err = eiiDatabContextCreate.ContextCreate(contextConfig)
 
 	if err != nil {
 		panic(err)
@@ -299,12 +299,12 @@ func TestCreateContext(t *testing.T) {
 // 	Test for ContextDestroy API.
 func TestContextDestroy(t *testing.T) {
 	fmt.Println("################## DataBus Context Destroy Test###################")
-	eisDatabContextDestroy, err := databus.NewDataBus()
+	eiiDatabContextDestroy, err := databus.NewDataBus()
 
 	contextConfig["direction"] = "PUB"
 
-	eisDatabContextDestroy.ContextCreate(contextConfig)
-	eisDatabContextDestroy.ContextDestroy()
+	eiiDatabContextDestroy.ContextCreate(contextConfig)
+	eiiDatabContextDestroy.ContextDestroy()
 
 	if err != nil {
 		panic(err)

@@ -9,7 +9,7 @@ The C example program demonstrates publish and subscription over OPCUA bus only 
 
 > **NOTE**:
 > The `Pre-requisite` section below is `only` needed if executing from
-> the EIS repo.
+> the EII repo.
   ```sh
   sudo apt-get install libmbedtls-dev
   make clean

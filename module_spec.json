@@ -1,0 +1,24 @@
+{
+    "SchemaVersion": "0.2",
+    "Runtime": "docker",
+    "RuntimeOptions": {
+        "ContainerImage": "${idx:ia_opcua_export:$EII_VERSION}"
+    },
+    "DataStore": {
+        "Protocol": "DIRECT",
+        "DataBuckets": [
+            {
+                "Name": "EII/OpcuaExport",
+                "Permissions": "RO"
+            },
+            {
+                "Name": "EII/GlobalEnv",
+                "Permissions": "RO"
+            },
+            {
+                "Name": "EII/Publickeys",
+                "Permissions": "RO"
+            }
+        ]
+    }
+}
