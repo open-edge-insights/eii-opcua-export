@@ -31,6 +31,8 @@ services:
       args:
         EII_VERSION: ${EII_VERSION}
         DOCKER_REGISTRY: ${DOCKER_REGISTRY}
+        UBUNTU_IMAGE_VERSION: ${UBUNTU_IMAGE_VERSION}
+        CMAKE_INSTALL_PREFIX: ${EII_INSTALL_PATH}
     read_only: true
     image: ${DOCKER_REGISTRY}ia_opcua_export:${EII_VERSION}
     container_name: ia_opcua_export
