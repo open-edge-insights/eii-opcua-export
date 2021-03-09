@@ -23,8 +23,8 @@ SOFTWARE.
 package main
 
 import (
-	eiscfgmgr "ConfigMgr/eisconfigmgr"
-	eismsgbus "EISMessageBus/eismsgbus"
+	eiicfgmgr "ConfigMgr/eiiconfigmgr"
+	eiimsgbus "EIIMessageBus/eiimsgbus"
 	databus "IEdgeInsights/OpcuaExport/OpcuaBusAbstraction/go"
 
 	"encoding/base64"
@@ -53,7 +53,7 @@ type opcuaBus struct {
 type OpcuaExport struct {
 	opcuaBus     opcuaBus
 	devMode      bool
-	configMgr    *eiscfgmgr.ConfigMgr
+	configMgr    *eiicfgmgr.ConfigMgr
 	cfgMgrConfig map[string]string
 }
 
@@ -61,7 +61,7 @@ type OpcuaExport struct {
 func NewOpcuaExport() (opcuaExport *OpcuaExport, err error) {
 	var opcuaContext map[string]string
 	opcuaExport = &OpcuaExport{}
-	opcuaExport.configMgr, err = eiscfgmgr.ConfigManager()
+	opcuaExport.configMgr, err = eiicfgmgr.ConfigManager()
 	if err != nil {
 		glog.Fatal("Config Manager initialization failed...")
 	}
@@ -142,7 +142,7 @@ func NewOpcuaExport() (opcuaExport *OpcuaExport, err error) {
 	return opcuaExport, err
 }
 
-// Subscribe function spawns worker thread to subscribe to EIS message bus and starts publishing data to opcua
+// Subscribe function spawns worker thread to subscribe to EII message bus and starts publishing data to opcua
 func (opcuaExport *OpcuaExport) Subscribe() {
 	glog.Infof("-- Initializing message bus context")
 	defer opcuaExport.configMgr.Destroy()
@@ -175,7 +175,7 @@ func (opcuaExport *OpcuaExport) Subscribe() {
 func worker(opcuaExport *OpcuaExport, config map[string]interface{}, topic string) {
 	defer opcuaExport.opcuaBus.opcuaDatab.ContextDestroy()
 
-	client, err := eismsgbus.NewMsgbusClient(config)
+	client, err := eiimsgbus.NewMsgbusClient(config)
 	if err != nil {
 		glog.Errorf("-- Error initializing message bus context: %v\n", err)
 		return

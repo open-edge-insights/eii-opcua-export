@@ -1,6 +1,6 @@
 # `OpcuaExport`
 
-OpcuaExoprt service subscribes to classified results from EIS message bus(VideoAnalytics) and starts publishing meta data to opcua clients
+OpcuaExoprt service subscribes to classified results from EII message bus(VideoAnalytics) and starts publishing meta data to opcua clients
 
 
 ## `Configuration`
@@ -10,7 +10,7 @@ For more details on Etcd secrets and messagebus endpoint configuration, visit [E
 
 ## `Installation`
 
-* Follow steps 1-5 of main [EIS README](../README.md) if not done already as part of EIS stack setup
+* Follow steps 1-5 of main [EII README](../README.md) if not done already as part of EII stack setup
 
 * Please use below steps to generate opcua client certificates before running test client subscriber for production mode.
    1. Append following key in `certs' in [build/provision/config/x509_cert_config.json](../build/provision/config/x509_cert_config.json) file.
@@ -23,12 +23,12 @@ For more details on Etcd secrets and messagebus endpoint configuration, visit [E
                 }
         ```
 
-    2. Re-provision EIS using below command in `[WORKDIR]/IEdgeInsights/build/provision` folder to reprovision EIS.
+    2. Re-provision EII using below command in `[WORKDIR]/IEdgeInsights/build/provision` folder to reprovision EII.
 
         ```
-        $ sudo ./provision_eis.sh <path_to_eis_docker_compose_file>
+        $ sudo ./provision_eii.sh <path_to_eii_docker_compose_file>
 
-        eq. $ sudo ./provision_eis.sh ../docker-compose.yml
+        eq. $ sudo ./provision_eii.sh ../docker-compose.yml
 
         ```
 

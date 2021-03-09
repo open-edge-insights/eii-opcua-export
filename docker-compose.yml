@@ -29,10 +29,10 @@ services:
       context: $PWD/../OpcuaExport
       dockerfile: $PWD/../OpcuaExport/Dockerfile
       args:
-        EIS_VERSION: ${EIS_VERSION}
+        EII_VERSION: ${EII_VERSION}
         DOCKER_REGISTRY: ${DOCKER_REGISTRY}
     read_only: true
-    image: ${DOCKER_REGISTRY}ia_opcua_export:${EIS_VERSION}
+    image: ${DOCKER_REGISTRY}ia_opcua_export:${EII_VERSION}
     container_name: ia_opcua_export
     hostname: ia_opcua_export
     network_mode: host
@@ -46,7 +46,7 @@ services:
     environment:
       AppName: "OpcuaExport"
       DEV_MODE: ${DEV_MODE}
-      no_proxy: ${eis_no_proxy},${ETCD_HOST}
+      no_proxy: ${eii_no_proxy},${ETCD_HOST}
       ETCD_HOST: ${ETCD_HOST}
       ETCD_CLIENT_PORT: ${ETCD_CLIENT_PORT}
       ETCD_PREFIX: ${ETCD_PREFIX}
@@ -66,9 +66,9 @@ services:
       camera1_stream_results_cfg: "zmq_tcp,127.0.0.1:65013"
       point_classifier_results_cfg: "zmq_tcp,127.0.0.1:65016"
     volumes:
-      - "vol_eis_socket:${SOCKET_DIR}"
+      - "vol_eii_socket:${SOCKET_DIR}"
       - "vol_opcua:/tmp"
-    user: ${EIS_UID}
+    user: ${EII_UID}
     secrets:
       - ca_etcd
       - etcd_OpcuaExport_cert
