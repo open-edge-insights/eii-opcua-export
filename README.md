@@ -23,12 +23,12 @@ For more details on Etcd secrets and messagebus endpoint configuration, visit [E
                 }
         ```
 
-    2. Re-provision EII using below command in `[WORKDIR]/IEdgeInsights/build/provision` folder to reprovision EII.
+    2. Re-provision using below command in `[WORKDIR]/IEdgeInsights/build/provision` folder to reprovision.
 
         ```
-        $ sudo ./provision_eii.sh <path_to_eii_docker_compose_file>
+        $ sudo ./provision.sh <path_to_eii_docker_compose_file>
 
-        eq. $ sudo ./provision_eii.sh ../docker-compose.yml
+        eq. $ sudo ./provision.sh ../docker-compose.yml
 
         ```
 
