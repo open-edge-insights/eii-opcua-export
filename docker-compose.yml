@@ -30,6 +30,8 @@ services:
       dockerfile: $PWD/../OpcuaExport/Dockerfile
       args:
         EII_VERSION: ${EII_VERSION}
+        EII_UID: ${EII_UID}
+        EII_USER_NAME: ${EII_USER_NAME}
         DOCKER_REGISTRY: ${DOCKER_REGISTRY}
         UBUNTU_IMAGE_VERSION: ${UBUNTU_IMAGE_VERSION}
         CMAKE_INSTALL_PREFIX: ${EII_INSTALL_PATH}
@@ -70,7 +72,6 @@ services:
     volumes:
       - "vol_eii_socket:${SOCKET_DIR}"
       - "vol_opcua:/tmp"
-    user: ${EII_UID}
     secrets:
       - ca_etcd
       - etcd_OpcuaExport_cert

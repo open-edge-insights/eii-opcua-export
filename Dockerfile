@@ -73,6 +73,10 @@ RUN mv OpcuaExport/schema.json $ARTIFACTS
 
 FROM ubuntu:$UBUNTU_IMAGE_VERSION as runtime
 ARG ARTIFACTS
+ARG EII_UID
+ARG EII_USER_NAME
+RUN groupadd $EII_USER_NAME -g $EII_UID && \
+    useradd -r -u $EII_UID -g $EII_USER_NAME $EII_USER_NAME
 
 RUN apt-get update && \
     apt-get install -y libmbedtls-dev
@@ -85,6 +89,7 @@ COPY --from=builder ${CMAKE_INSTALL_PREFIX}/lib .local/lib
 COPY --from=builder $ARTIFACTS .
 COPY --from=builder $ARTIFACTS/lib .local/lib
 
+USER $EII_USER_NAME
 
 ENV LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:/app/.local/lib
 HEALTHCHECK NONE
