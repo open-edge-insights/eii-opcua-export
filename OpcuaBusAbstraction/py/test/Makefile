@@ -35,7 +35,7 @@ build:
 
 pub:
 	@echo "Starting the opcua secure server and start publishing the data.."
-	python3.6 DataBusTest.py -direction PUB -endpoint opcua://$(HOST):$(PORT) -ns StreamManager \
+	python3 DataBusTest.py -direction PUB -endpoint opcua://$(HOST):$(PORT) -ns StreamManager \
 							 -topics $(TOPICS) \
 							 -certFile $(SERVER_CERTS)/opcua_server_certificate.der \
 							 -privateFile $(SERVER_CERTS)/opcua_server_key.der \
@@ -43,7 +43,7 @@ pub:
 
 sub:
 	@echo "Establish connection to opcua secure server and start subscribing the data.."
-	python3.6 DataBusTest.py -direction SUB -endpoint opcua://$(HOST):$(PORT) -ns StreamManager \
+	python3 DataBusTest.py -direction SUB -endpoint opcua://$(HOST):$(PORT) -ns StreamManager \
 							 -topics $(TOPICS) \
 							 -certFile $(CLIENT_CERTS)/opcua_client_certificate.der \
 							 -privateFile $(CLIENT_CERTS)/opcua_client_key.der \
@@ -51,12 +51,12 @@ sub:
 
 pub_insecure:
 	@echo "Starting the opcua insecure server and start publishing the data.."
-	python3.6 DataBusTest.py -direction PUB -endpoint opcua://$(HOST):$(PORT) -ns StreamManager \
+	python3 DataBusTest.py -direction PUB -endpoint opcua://$(HOST):$(PORT) -ns StreamManager \
 							 -topics $(TOPICS) -certFile "" -privateFile "" -trustFile ""
 
 sub_insecure:
 	@echo "Establish connection to opcua insecure server and start subscribing the data.."
-	python3.6 DataBusTest.py -direction SUB -endpoint opcua://$(HOST):$(PORT) -ns StreamManager \
+	python3 DataBusTest.py -direction SUB -endpoint opcua://$(HOST):$(PORT) -ns StreamManager \
 							 -topics $(TOPICS) -certFile "" -privateFile "" -trustFile ""
 
 clean:

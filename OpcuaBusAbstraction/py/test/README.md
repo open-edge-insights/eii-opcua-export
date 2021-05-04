@@ -6,12 +6,12 @@ The python example program demonstrates publish and subscription over OPCUA bus 
 
 ## Dependencies
 
-* python3.6 (for python) installed
+* python3 (for python) installed
 * Install databus_requirements.txt (for python) by running cmd: `sudo -H pip3.6 install -r  databus_requirements.txt`
 * Install open62541 library dependencies (mbedTLS, python dev):
 
   ```sh
-  sudo apt-get install -y libmbedtls-dev python3.6-dev
+  sudo apt-get install -y libmbedtls-dev python3-dev
   ```
 
   > **NOTE**: If `OpcuaBusAbstraction` module is referred from dist_libs path, make sure that the `sub` client is also run on Ubuntu > 18.04 as the dist libs package is been created by a container with ubuntu 18.04 as the base image. If working from IEI repo,
