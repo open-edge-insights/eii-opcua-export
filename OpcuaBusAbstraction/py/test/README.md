@@ -8,6 +8,12 @@ The python example program demonstrates publish and subscription over OPCUA bus 
 
 * python3 (for python) installed
 * Install databus_requirements.txt (for python) by running cmd: `sudo -H pip3.6 install -r  databus_requirements.txt`
+
+  **Note**: It is highly recommended that you use a python virtual environment to
+  install the python packages, so that the system python installation doesn't
+  get altered. Details on setting up and using python virtual environment can
+  be found here: https://www.geeksforgeeks.org/python-virtual-environment/
+
 * Install open62541 library dependencies (mbedTLS, python dev):
 
   ```sh
