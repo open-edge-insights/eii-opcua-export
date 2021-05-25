@@ -110,7 +110,7 @@ class DataBus:
             try:
                 self.bus.createContext(contextcreate)
             except Exception:
-                self.logger.error("{} Failure!!!".format(
+                self.logger.exception("{} Failure!!!".format(
                     self.context_create.__name__))
                 raise
             if contextcreate["direction"] == "PUB":
@@ -139,7 +139,7 @@ class DataBus:
             try:
                 self.bus.send(topic_config, data)
             except Exception:
-                self.logger.error("{} Failure!!!".format(
+                self.logger.exception("{} Failure!!!".format(
                     self.publish.__name__))
                 raise
 
@@ -175,7 +175,7 @@ class DataBus:
                     self.bus.receive(topic_config, topic_config_count,
                                      "START", data_q)
             except Exception:
-                self.logger.error("receive {} Failure!!!".format(
+                self.logger.exception("receive {} Failure!!!".format(
                     self.subscribe.__name__))
                 raise
 
@@ -198,6 +198,6 @@ class DataBus:
                 finally:
                     self.mutex.release()
         except Exception:
-            self.logger.error("{} Failure!!!".format(
+            self.logger.exception("{} Failure!!!".format(
                 self.context_destroy.__name__))
             raise

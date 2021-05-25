@@ -123,7 +123,7 @@ class DatabOpcua:
                         self.logger.error("Publish() API failed!")
                         raise Exception(py_error_msg)
                 except Exception:
-                    self.logger.error("{} Failure!!!".format(
+                    self.logger.exception("{} Failure!!!".format(
                         self.send.__name__))
                     raise
             else:
@@ -192,6 +192,6 @@ class DatabOpcua:
             open62541W.ContextDestroy()
             self.logger.debug("OPCUA context is Terminated")
         except Exception:
-            self.logger.error("{} Failure!!!".format(
+            self.logger.exception("{} Failure!!!".format(
                 self.destroy_context.__name__))
             raise
