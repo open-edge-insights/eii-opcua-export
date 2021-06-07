@@ -2,3 +2,4 @@ config:
     opcuaexport:
       name: opcuaexport
       opcua_port: 65003
+      IPC: false
