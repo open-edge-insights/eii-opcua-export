@@ -50,7 +50,7 @@ spec:
     spec:
       containers:
       - name: ia-opcua-export
-        image: {{ .Values.registry }}ia_opcua_export:{{ .Values.eii_version }}
+        image: {{ .Values.DOCKER_REGISTRY }}ia_opcua_export:{{ .Values.EII_VERSION }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         securityContext:
           privileged: true
@@ -59,7 +59,7 @@ spec:
         - name: {{ .Values.volumes.eii_socket.name }}
           mountPath: {{ .Values.volumes.eii_socket.location }}
         {{- end }}
-        {{ if eq .Values.env.dev_mode false}}
+        {{ if eq .Values.env.DEV_MODE false}}
         - name: etcd-certs
           mountPath: /run/secrets/etcd/
         {{ end }}
@@ -68,7 +68,7 @@ spec:
         - name: AppName
           value: "OpcuaExport"
         - name: DEV_MODE
-          value: '{{ .Values.env.dev_mode }}'
+          value: '{{ .Values.env.DEV_MODE }}'
         - name: ETCD_HOST
           value: {{ .Values.config.etcd.name }}
         - name: ETCD_CLIENT_PORT
@@ -98,7 +98,7 @@ spec:
         - name: SUBSCRIBER_defaultInflux_TYPE
           value: "zmq_ipc"
         {{- end }}
-        {{ if eq .Values.env.dev_mode false}}
+        {{ if eq .Values.env.DEV_MODE false}}
         - name: CONFIGMGR_CACERT
           value: "/run/secrets/etcd/ca_certificate.pem"
         - name: CONFIGMGR_CERT
@@ -113,7 +113,7 @@ spec:
         persistentVolumeClaim:
           claimName: {{ .Values.volumes.eii_socket.name }}
       {{- end }}
-      {{ if eq .Values.env.dev_mode false}}
+      {{ if eq .Values.env.DEV_MODE false}}
       - name: etcd-certs
         secret:
           secretName: eii-certs
