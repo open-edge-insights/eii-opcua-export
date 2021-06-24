@@ -48,6 +48,10 @@ spec:
       labels:
         app: opcuaexport
     spec:
+      {{- if and .Values.DOCKER_USERNAME .Values.DOCKER_PASSWORD }}
+      imagePullSecrets:
+      - name: registryauth
+      {{- end }}
       containers:
       - name: ia-opcua-export
         image: {{ .Values.DOCKER_REGISTRY }}openedgeinsights/ia_opcua_export:{{ .Values.EII_VERSION }}
