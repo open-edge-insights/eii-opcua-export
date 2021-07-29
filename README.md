@@ -4,19 +4,20 @@
   - [`Configuration`](#configuration)
   - [`Service bring up`](#service-bring-up)
 
-# `OpcuaExport`
+# OpcuaExport
 
 OpcuaExoprt service subscribes to classified results from EII message bus(VideoAnalytics) and starts publishing meta data to opcua clients
 
-## `Configuration`
+## Configuration
 
 For more details on Etcd secrets and messagebus endpoint configuration, visit [Etcd_Secrets_Configuration.md](../Etcd_Secrets_Configuration.md) and
 [MessageBus Configuration](../common/libs/ConfigMgr/README.md#interfaces) respectively.
 
-## `Service bring up`
+## Service bring up
 
 * Please use below steps to generate opcua client certificates before running test client subscriber for production mode.
    1. Append following key in `certs' in [build/provision/config/x509_cert_config.json](../build/provision/config/x509_cert_config.json) file.
+        
         ```
                 {
                   "opcua": {
