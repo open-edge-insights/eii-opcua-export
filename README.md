@@ -10,14 +10,14 @@ OpcuaExoprt service subscribes to classified results from EII message bus(VideoA
 
 ## Configuration
 
-For more details on Etcd secrets and messagebus endpoint configuration, visit [Etcd_Secrets_Configuration.md](../Etcd_Secrets_Configuration.md) and
-[MessageBus Configuration](../common/libs/ConfigMgr/README.md#interfaces) respectively.
+For more details on Etcd secrets and messagebus endpoint configuration, visit [Etcd_Secrets_Configuration.md](https://github.com/open-edge-insights/eii-core/blob/master/Etcd_Secrets_Configuration.md) and
+[MessageBus Configuration](https://github.com/open-edge-insights/eii-core/blob/master/common/libs/ConfigMgr/README.md#interfaces) respectively.
 
 ## Service bring up
 
 * Please use below steps to generate opcua client certificates before running test client subscriber for production mode.
-   1. Append following key in `certs' in [build/provision/config/x509_cert_config.json](../build/provision/config/x509_cert_config.json) file.
-        
+
+   1. Append following key in `certs' in [build/provision/config/x509_cert_config.json](https://github.com/open-edge-insights/eii-core/blob/master/build/provision/config/x509_cert_config.json) file.
         ```
                 {
                   "opcua": {
@@ -29,9 +29,9 @@ For more details on Etcd secrets and messagebus endpoint configuration, visit [E
 
     2. Please go through the below sections to have RestDataExport 
        service built and launch it:
-        - [../README.md#generate-deployment-and-configuration-files](../README.md#generate-deployment-and-configuration-files)
-        - [../README.md#provision](../README.md#provision)
-        - [../README.md#build-and-run-eii-videotimeseries-use-cases](../README.md#build-and-run-eii-videotimeseries-use-cases)
+        - [../README.md#generate-deployment-and-configuration-files](https://github.com/open-edge-insights/eii-core/blob/master/README.md#generate-deployment-and-configuration-files)
+        - [../README.md#provision](https://github.com/open-edge-insights/eii-core/blob/master/README.md#provision)
+        - [../README.md#build-and-run-eii-videotimeseries-use-cases](https://github.com/open-edge-insights/eii-core/blob/master/README.md#build-and-run-eii-videotimeseries-use-cases)
 
     3. Update opcua client certificate access so that sample test program 
        can access the certificates.
