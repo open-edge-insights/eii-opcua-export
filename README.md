@@ -1,12 +1,13 @@
 **Contents**
 
-- [`OpcuaExport`](#opcuaexport)
-  - [`Configuration`](#configuration)
-  - [`Service bring up`](#service-bring-up)
+- [OpcuaExport](#opcuaexport)
+  - [Configuration](#configuration)
+  - [Service bring up](#service-bring-up)
+  - [Known issues](#known-issues)
 
 # OpcuaExport
 
-OpcuaExoprt service subscribes to classified results from EII message bus(VideoAnalytics) and starts publishing meta data to opcua clients
+OpcuaExport service serves as as OPCUA server subscribring to classified results from EII message bus(VideoAnalytics) and starts publishing meta data to OPCUA clients
 
 ## Configuration
 
@@ -44,4 +45,14 @@ For more details on Etcd secrets and messagebus endpoint configuration, visit [E
         > **Caution**: This step will make the certs insecure. Please do not do it on a production machine.
 
 * To run a test subscriber follow README at [OpcuaExport/OpcuaBusAbstraction/c/test](OpcuaBusAbstraction/c/test)
+
+## Known issues
+
+* OpcuaExport service has been validated with below 3rd party OPCUA client apps:
+  * OPCUA CTT tool (https://opcfoundation.org/developer-tools/certification-test-tools/opc-ua-compliance-test-tool-uactt/) - Works well in both DEV and PROD modes
+  * UaExpert (https://www.unified-automation.com/downloads/opc-ua-clients.html) - Works well in DEV mode only and with PROD mode, facing issues while trusting the self-signed certs
+  * Integrated Objects (https://integrationobjects.com/sioth-opc/sioth-opc-unified-architecture/opc-ua-client/) - Works well in DEV mode only and with PROD mode, facing issues while trusting the self-signed certs
+  
+  However, the Prosys OPCUA client app(https://www.prosysopc.com/products/opc-ua-browser/) doesn't work both in DEV and PROD modes as it expects LDS(Local discovery server) to be implemented in the OPCUA Server to be able to discover   
+  server and LDS is not part of out OpcuaExport service now.
 
