@@ -88,6 +88,9 @@ COPY --from=builder ${CMAKE_INSTALL_PREFIX}/lib .local/lib
 COPY --from=builder $ARTIFACTS .
 COPY --from=builder $ARTIFACTS/lib .local/lib
 
+RUN chown -R ${EII_UID}:${EII_UID} /tmp/ && \
+    chmod -R 760 /tmp/
+
 USER $EII_USER_NAME
 
 ENV LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:/app/.local/lib
