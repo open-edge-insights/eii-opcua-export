@@ -10,10 +10,10 @@ SERVER_CERTS = /etc/ssl/opcua
 CLIENT_CERTS = /etc/ssl/opcua
 CA_CERTS = /etc/ssl/ca
 WRAPPERS_PATH = $(SOURCE_FILE)/open62541_wrappers.c
-TOPICS = cam_serial1_results,cam_serial2_results
+TOPICS = opcua_cam_serial1_results,opcua_cam_serial2_results
 SECURE_CFLAGS=-fstack-protector-strong -fPIE -fPIC -O2 -D_FORTIFY_SOURCE=2 -Wformat -Wformat-security
 SECURE_LDFLAGS=-z noexecstack -z relro -z now -pie
-HOST = localhost
+HOST = "localhost"
 PORT = 65003
 MAX_SAFESTRING_SIZE = 60
 
@@ -51,14 +51,14 @@ pub: build
 				   $(TOPICS) \
 				   $(SERVER_CERTS)/opcua_server_certificate.der \
 				   $(SERVER_CERTS)/opcua_server_key.der \
-				   $(CA_CERTS)/ca_certificate.der
+				   $(CLIENT_CERTS)/opcua_client_certificate.der
 sub: build
 	@echo "Start secure client, subscribe and destroy..."
 	./DataBus_test SUB opcua://$(HOST):$(PORT) streammanager \
 				   $(TOPICS) \
 				   $(CLIENT_CERTS)/opcua_client_certificate.der \
 	               $(CLIENT_CERTS)/opcua_client_key.der \
-				   $(CA_CERTS)/ca_certificate.der
+                   $(SERVER_CERTS)/opcua_server_certificate.der
 
 pub_insecure: build
 	@echo "Start insecure server, publish and destroy..."

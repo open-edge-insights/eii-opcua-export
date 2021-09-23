@@ -8,7 +8,7 @@ CERT_DIR_PATH = $(DBA_PATH)/../cert-tool/Certificates
 SERVER_CERTS = /etc/ssl/opcua
 CLIENT_CERTS = /etc/ssl/opcua
 CA_CERTS = /etc/ssl/ca
-TOPICS = cam_serial1_results,cam_serial2_results
+TOPICS = opcua_cam_serial1_results,opcua_cam_serial2_results
 HOST = localhost
 PORT = 65003
 MAX_SAFESTRING_SIZE = 60
@@ -35,28 +35,28 @@ build:
 
 pub:
 	@echo "Starting the opcua secure server and start publishing the data.."
-	python3 DataBusTest.py -direction PUB -endpoint opcua://$(HOST):$(PORT) -ns StreamManager \
+	python3 databustest.py -direction PUB -endpoint opcua://$(HOST):$(PORT) -ns StreamManager \
 							 -topics $(TOPICS) \
 							 -certFile $(SERVER_CERTS)/opcua_server_certificate.der \
 							 -privateFile $(SERVER_CERTS)/opcua_server_key.der \
-							 -trustFile $(CA_CERTS)/ca_certificate.der
+							 -trustFile $(CLIENT_CERTS)/opcua_client_certificate.der
 
 sub:
 	@echo "Establish connection to opcua secure server and start subscribing the data.."
-	python3 DataBusTest.py -direction SUB -endpoint opcua://$(HOST):$(PORT) -ns StreamManager \
+	python3 databustest.py -direction SUB -endpoint opcua://$(HOST):$(PORT) -ns StreamManager \
 							 -topics $(TOPICS) \
 							 -certFile $(CLIENT_CERTS)/opcua_client_certificate.der \
 							 -privateFile $(CLIENT_CERTS)/opcua_client_key.der \
-							 -trustFile $(CA_CERTS)/ca_certificate.der
+							 -trustFile $(SERVER_CERTS)/opcua_server_certificate.der
 
 pub_insecure:
 	@echo "Starting the opcua insecure server and start publishing the data.."
-	python3 DataBusTest.py -direction PUB -endpoint opcua://$(HOST):$(PORT) -ns StreamManager \
+	python3 databustest.py -direction PUB -endpoint opcua://$(HOST):$(PORT) -ns StreamManager \
 							 -topics $(TOPICS) -certFile "" -privateFile "" -trustFile ""
 
 sub_insecure:
 	@echo "Establish connection to opcua insecure server and start subscribing the data.."
-	python3 DataBusTest.py -direction SUB -endpoint opcua://$(HOST):$(PORT) -ns StreamManager \
+	python3 databustest.py -direction SUB -endpoint opcua://$(HOST):$(PORT) -ns StreamManager \
 							 -topics $(TOPICS) -certFile "" -privateFile "" -trustFile ""
 
 clean:

@@ -98,8 +98,8 @@ func NewOpcuaExport() (opcuaExport *OpcuaExport, err error) {
 	opcuaContext["privateFile"] = ""
 	opcuaContext["trustFile"] = ""
 
-	opcuaCerts := []string{"/tmp/opcua_server_cert.der", "/tmp/opcua_server_key.der", "/tmp/ca_cert.der"}
-	opcuaExportKeys := []string{"server_cert", "server_key", "ca_cert"}
+	opcuaCerts := []string{"/tmp/opcua_server_cert.der", "/tmp/opcua_server_key.der"}
+	opcuaExportKeys := []string{"server_cert", "server_key"}
 
 	if !opcuaExport.devMode {
 		i := 0
@@ -114,7 +114,7 @@ func NewOpcuaExport() (opcuaExport *OpcuaExport, err error) {
 		}
 		opcuaContext["certFile"] = opcuaCerts[0]
 		opcuaContext["privateFile"] = opcuaCerts[1]
-		opcuaContext["trustFile"] = opcuaCerts[2]
+		opcuaContext["trustFile"] = "/run/secrets/opcua_client_cert"
 	}
 
 	opcuaExport.opcuaBus.opcuaDatab, err = databus.NewDataBus()

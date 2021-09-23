@@ -18,41 +18,36 @@ For more details on Etcd secrets and messagebus endpoint configuration, visit [E
 
 * Please use below steps to generate opcua client certificates before running test client subscriber for production mode.
 
-   1. Append following key in `certs' in [build/provision/config/x509_cert_config.json](https://github.com/open-edge-insights/eii-core/blob/master/build/provision/config/x509_cert_config.json) file.
-        ```
-                {
-                  "opcua": {
-                    "client_alt_name": "",
-			        "output_format": "DER"
-                  }
-                }
-        ```
-
-    2. Please go through the below sections to have RestDataExport 
+    1. Please go through the below sections to have OpcuaExport 
        service built and launch it:
         - [../README.md#generate-deployment-and-configuration-files](https://github.com/open-edge-insights/eii-core/blob/master/README.md#generate-deployment-and-configuration-files)
         - [../README.md#provision](https://github.com/open-edge-insights/eii-core/blob/master/README.md#provision)
         - [../README.md#build-and-run-eii-videotimeseries-use-cases](https://github.com/open-edge-insights/eii-core/blob/master/README.md#build-and-run-eii-videotimeseries-use-cases)
 
-    3. Update opcua client certificate access so that sample test program 
+    2. Update opcua client certificate access so that sample test program 
        can access the certificates.
 
         ```sh
-            sudo chmod -R 755 ../../build/provision/Certificates/ca
-            sudo chmod -R 755 ../../build/provision/Certificates/opcua
+            sudo chmod -R 755 ../../build/provision/Certificates
         ```
 
         > **Caution**: This step will make the certs insecure. Please do not do it on a production machine.
 
 * To run a test subscriber follow README at [OpcuaExport/OpcuaBusAbstraction/c/test](OpcuaBusAbstraction/c/test)
 
-## Known issues
+## OPCUA client apps
 
 * OpcuaExport service has been validated with below 3rd party OPCUA client apps:
-  * OPCUA CTT tool (https://opcfoundation.org/developer-tools/certification-test-tools/opc-ua-compliance-test-tool-uactt/) - Works well in both DEV and PROD modes
-  * UaExpert (https://www.unified-automation.com/downloads/opc-ua-clients.html) - Works well in DEV mode only and with PROD mode, facing issues while trusting the self-signed certs
-  * Integrated Objects (https://integrationobjects.com/sioth-opc/sioth-opc-unified-architecture/opc-ua-client/) - Works well in DEV mode only and with PROD mode, facing issues while trusting the self-signed certs
-  
-  However, the Prosys OPCUA client app(https://www.prosysopc.com/products/opc-ua-browser/) doesn't work both in DEV and PROD modes as it expects LDS(Local discovery server) to be implemented in the OPCUA Server to be able to discover   
-  server and LDS is not part of out OpcuaExport service now.
+  * OPCUA CTT tool (https://opcfoundation.org/developer-tools/certification-test-tools/opc-ua-compliance-test-tool-uactt/)
+  * UaExpert (https://www.unified-automation.com/downloads/opc-ua-clients.html)
+  * Integrated Objects (https://integrationobjects.com/sioth-opc/sioth-opc-unified-architecture/opc-ua-client/)
+  * Prosys OPCUA client app(https://www.prosysopc.com/products/opc-ua-browser/)
+
+### Note:
+To connect with OPCUA client apps, User needs to take backup [opcua_client_certificate.der](../build/provision/Certificates/opcua/opcua_client_certificate.der) and copy OPCUA client apps certificate to it.
+```sh
+    sudo chmod -R 755 ../../build/provision/Certificates
+    cp <OPCUA client apps certificate> ../build/provision/Certificates/opcua/opcua_client_certificate.der
+```
+Make sure to down all the eii services and up to reflect the changes.
 

@@ -12,7 +12,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <unistd.h>
 #include "open62541_wrappers.h"
-
+#include <assert.h>
 // opcua server global variables
 // Structure for maintaining Server Context
 typedef struct {
@@ -126,15 +126,15 @@ getNamespaceIndex(char *ns,
                 UA_UInt16 nodeNs = ref->nodeId.nodeId.namespaceIndex;
                 if (!strcmp(topic, nodeIdentifier)) {
                     UA_LOG_DEBUG(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Node exists !!!\n");
-                    UA_BrowseRequest_deleteMembers(&bReq);
-                    UA_BrowseResponse_deleteMembers(&bResp);
+                    UA_BrowseRequest_clear(&bReq);
+                    UA_BrowseResponse_clear(&bResp);
                     return nodeNs;
                 }
             }
         }
     }
-    UA_BrowseRequest_deleteMembers(&bReq);
-    UA_BrowseResponse_deleteMembers(&bResp);
+    UA_BrowseRequest_clear(&bReq);
+    UA_BrowseResponse_clear(&bResp);
     return 0;
 }
 
@@ -230,7 +230,7 @@ cleanupServer() {
         UA_Server_delete(gServerContext.server);
     }
     if (gServerContext.serverConfig) {
-        UA_ServerConfig_delete(gServerContext.serverConfig);
+        UA_ServerConfig_clean(gServerContext.serverConfig);
     }
     if (gServerContext.serverLock) {
         int rc = pthread_mutex_destroy(gServerContext.serverLock);
@@ -313,18 +313,36 @@ serverContextCreateSecured(const char *hostname,
     /* Loading of a revocation list currently unsupported */
     UA_ByteString *revocationList = NULL;
     size_t revocationListSize = 0;
+    size_t issuerListSize = 0;
+    UA_ByteString *issuerList = NULL;
 
+    /* Initiate server instance */
+    gServerContext.server = UA_Server_new();
+    if(gServerContext.server == NULL) {
+        static char str[] = "UA_Server_new() API failed";
+        UA_LOG_FATAL(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "%s",
+            str);
+        return str;
+    }
     /* Initiate server config */
-    gServerContext.serverConfig =
-        UA_ServerConfig_new_basic256sha256(port, &certificate, &privateKey,
-                                          trustList, trustedListSize,
-                                          revocationList, revocationListSize);
+    gServerContext.serverConfig = UA_Server_getConfig(gServerContext.server);
+
     if(!gServerContext.serverConfig) {
         static char str[] = "Could not create the server config";
         UA_LOG_FATAL(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "%s",
             str);
         return str;
     }
+     UA_ServerConfig_setCustomHostname(gServerContext.serverConfig, UA_STRING((char *)hostname));
+     UA_StatusCode retval =
+        UA_ServerConfig_setDefaultWithSecurityPolicies(gServerContext.serverConfig, port,
+                                                       &certificate, &privateKey,
+                                                       trustList, trustedListSize,
+                                                       issuerList, issuerListSize,
+                                                       revocationList, revocationListSize);
+
+
+
 
     for(int i = 0; i < gServerContext.serverConfig->endpointsSize; i++) {
         if(gServerContext.serverConfig->endpoints[i].securityMode != UA_MESSAGESECURITYMODE_SIGNANDENCRYPT) {
@@ -333,20 +351,11 @@ serverContextCreateSecured(const char *hostname,
         }
     }
 
-    UA_ServerConfig_set_customHostname(gServerContext.serverConfig, UA_STRING((char *)hostname));
 
     UA_DurationRange range = {5.0, 5.0};
     gServerContext.serverConfig->publishingIntervalLimits = range;
     gServerContext.serverConfig->samplingIntervalLimits = range;
 
-    /* Initiate server instance */
-    gServerContext.server = UA_Server_new(gServerContext.serverConfig);
-    if(gServerContext.server == NULL) {
-        static char str[] = "UA_Server_new() API failed";
-        UA_LOG_FATAL(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "%s",
-            str);
-        return str;
-    }
 
     /* Creation of mutex for server instance */
     gServerContext.serverLock = (pthread_mutex_t*) malloc(sizeof(pthread_mutex_t));
@@ -371,23 +380,18 @@ serverContextCreateSecured(const char *hostname,
 char*
 serverContextCreate(const char *hostname,
                     unsigned int port) {
-
+    /* Initiate server instance */
+    gServerContext.server = UA_Server_new();
     /* Initiate server config */
-    gServerContext.serverConfig = UA_ServerConfig_new_minimal(port, NULL);;
-    if(!gServerContext.serverConfig) {
-        static char str[] = "Could not create the server config";
-        UA_LOG_FATAL(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "%s",
-            str);
-        return str;
-    }
-    UA_ServerConfig_set_customHostname(gServerContext.serverConfig, UA_STRING((char *)hostname));
+    gServerContext.serverConfig = UA_Server_getConfig(gServerContext.server);
+    UA_ServerConfig_setMinimal(gServerContext.serverConfig, port, NULL);
+    UA_ServerConfig_setCustomHostname(gServerContext.serverConfig, UA_STRING((char *)hostname));
 
     UA_DurationRange range = {5.0, 10.0};
     gServerContext.serverConfig->publishingIntervalLimits = range;
     gServerContext.serverConfig->samplingIntervalLimits = range;
 
     /* Initiate server instance */
-    gServerContext.server = UA_Server_new(gServerContext.serverConfig);
 
     if(gServerContext.server == NULL) {
         static char str[] = "UA_Server_new() API failed";
@@ -624,33 +628,37 @@ createSubscription() {
     return 0;
 }
 
-static void stateCallback(UA_Client *client,
-                          UA_ClientState clientState) {
-    switch(clientState) {
-        case UA_CLIENTSTATE_WAITING_FOR_ACK:
-            UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "The client is waiting for ACK");
-            break;
-        case UA_CLIENTSTATE_DISCONNECTED:
+static void stateCallback(UA_Client *client, UA_SecureChannelState channelState,
+              UA_SessionState sessionState, UA_StatusCode recoveryStatus) {
+    switch(channelState) {
+        case UA_SECURECHANNELSTATE_CLOSED:
             UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "The client is disconnected");
             break;
-        case UA_CLIENTSTATE_CONNECTED:
-            UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "A TCP connection to the server is open");
+        case UA_SECURECHANNELSTATE_HEL_SENT:
+            UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Waiting for ack");
             break;
-        case UA_CLIENTSTATE_SECURECHANNEL:
+        case UA_SECURECHANNELSTATE_OPN_SENT:
+            UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Waiting for OPN Response");
+            break;
+        case UA_SECURECHANNELSTATE_OPEN:
             UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "A SecureChannel to the server is open");
             break;
-        case UA_CLIENTSTATE_SESSION:
-            UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "A session with the server is open");
+        default:
             break;
-        case UA_CLIENTSTATE_SESSION_RENEWED:
-            /* The session was renewed. We don't need to recreate the subscription. */
-            UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "A session with the server is open (renewed)");
+    }
+
+    switch(sessionState) {
+        case UA_SESSIONSTATE_ACTIVATED: {
+            UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "A session with the server is activated");
             break;
-        case UA_CLIENTSTATE_SESSION_DISCONNECTED:
+        case UA_SESSIONSTATE_CLOSED:
             UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Session disconnected");
+            break;
+        default:
             break;
     }
     return;
+}
 }
 
 
@@ -663,8 +671,12 @@ runClient(void *tArgs) {
         /* if already connected, this will return GOOD and do nothing */
         /* if the connection is closed/errored, the connection will be reset and then reconnected */
         /* Alternatively you can also use UA_Client_getState to get the current state */
-        UA_ClientState clientState = UA_Client_getState(gClientContext.client);
-        if (clientState == UA_CLIENTSTATE_DISCONNECTED) {
+        UA_SecureChannelState scs;
+        UA_SessionState sessionState;
+        UA_Client_getState(gClientContext.client, &scs, &sessionState, NULL);
+
+
+        if (sessionState == UA_SESSIONSTATE_CLOSED) {
             UA_StatusCode retval = UA_Client_connect(gClientContext.client, gClientContext.endpoint);
             if(retval != UA_STATUSCODE_GOOD) {
                 UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Error: %s", UA_StatusCode_name(retval));
@@ -674,8 +686,8 @@ runClient(void *tArgs) {
                 UA_sleep_ms(1000);
                 continue;
             }
-            clientState = UA_Client_getState(gClientContext.client);
-            if (clientState == UA_CLIENTSTATE_SESSION) {
+            UA_Client_getState(gClientContext.client, &scs, &sessionState, NULL);
+            if (sessionState == UA_SESSIONSTATE_ACTIVATED) {
                 /* recreating the subscription upon opcua server connect */
                 if (createSubscription() == FAILURE) {
                     UA_LOG_FATAL(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "createSubscription() failed");
@@ -748,6 +760,7 @@ clientContextCreateSecured(const char *hostname,
 
     gClientContext.clientConfig = UA_Client_getConfig(gClientContext.client);
     gClientContext.clientConfig->securityMode = UA_MESSAGESECURITYMODE_SIGNANDENCRYPT;
+    gClientContext.clientConfig->securityPolicyUri = UA_STRING_ALLOC("http://opcfoundation.org/UA/SecurityPolicy#Basic256Sha256");
     UA_ClientConfig_setDefaultEncryption(gClientContext.clientConfig, certificate, privateKey,
                                          trustList, trustedListSize,
                                          revocationList, revocationListSize);
@@ -764,7 +777,8 @@ clientContextCreateSecured(const char *hostname,
     }
 
     /* Secure client connect */
-    gClientContext.clientConfig->securityMode = UA_MESSAGESECURITYMODE_SIGNANDENCRYPT; /* require encryption */
+    gClientContext.clientConfig -> clientDescription.applicationUri = UA_STRING_ALLOC("urn:open62541.client.application");
+    UA_SecurityPolicy_None(gClientContext.clientConfig->securityPolicies, certificate, &gClientContext.clientConfig->logger);
     retval = UA_Client_connect(gClientContext.client, gClientContext.endpoint);
     if(retval != UA_STATUSCODE_GOOD) {
         UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Error: %s", UA_StatusCode_name(retval));

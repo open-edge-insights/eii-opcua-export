@@ -2,7 +2,6 @@
  * See http://creativecommons.org/publicdomain/zero/1.0/ for more information. */
 
 #include "open62541.h"
-
 /* loadFile parses the certificate file.
  *
  * @param  path               specifies the file name given in argv[]
@@ -26,11 +25,31 @@ loadFile(const char *const path) {
         fseek(fp, 0, SEEK_SET);
         size_t read = fread(fileContents.data, sizeof(UA_Byte), fileContents.length, fp);
         if(read != fileContents.length)
-            UA_ByteString_deleteMembers(&fileContents);
+            UA_ByteString_clear(&fileContents);
     } else {
         fileContents.length = 0;
     }
     fclose(fp);
 
     return fileContents;
+}
+
+static UA_INLINE UA_StatusCode
+writeFile(const char* const path, const UA_ByteString buffer) {
+    FILE *fp = NULL;
+
+    fp = fopen(path, "wb");
+    if(fp == NULL) 
+        return UA_STATUSCODE_BADINTERNALERROR;
+
+    for(UA_UInt32 bufIndex = 0; bufIndex < buffer.length; bufIndex++) {
+        int retVal = fputc(buffer.data[bufIndex], fp);
+        if(retVal == EOF) {
+            fclose(fp);
+            return UA_STATUSCODE_BADINTERNALERROR;
+        }
+    }
+
+    fclose(fp);
+    return UA_STATUSCODE_GOOD;
 }

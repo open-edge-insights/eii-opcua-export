@@ -24,7 +24,7 @@ import time
 import argparse
 import sys
 import logging
-from DataBus import databus
+from databus import DataBus
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s : %(levelname)s : \
@@ -79,8 +79,8 @@ class DataBusTest:
                           "privateFile": args.privateFile,
                           "trustFile": args.trustFile}
         try:
-            eiidbus = databus(LOGGER)
-            eiidbus.ContextCreate(context_config)
+            eiidbus = DataBus(LOGGER)
+            eiidbus.context_create(context_config)
             topic_configs = []
             topics_list = args.topics.split(',')
             for topic in topics_list:
@@ -92,11 +92,11 @@ class DataBusTest:
                 for i in range(0, 20):
                     for topic_config in topic_configs:
                         result = "{0} {1}".format(topic_config["name"], i)
-                        eiidbus.Publish(topic_config, result)
+                        eiidbus.publish(topic_config, result)
                         print("Published [" + result + "]")
                         time.sleep(1)
             elif args.direction == "SUB":
-                eiidbus.Subscribe(topic_configs, len(topic_configs), 'START',
+                eiidbus.subscribe(topic_configs, len(topic_configs), 'START',
                                   self.cb_func)
 
                 # flag = "START"
@@ -107,7 +107,7 @@ class DataBusTest:
         except KeyboardInterrupt as err:
             LOGGER.exception("Received SIGTERM signal, doing app shutdown")
             LOGGER.exception("Exception: {}".format(err))
-            eiidbus.ContextDestroy()
+            eiidbus.context_destroy()
             sys.exit(-1)
         except Exception as err:
             LOGGER.exception("Exception: {}".format(err))
