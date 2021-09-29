@@ -115,6 +115,10 @@ func NewOpcuaExport() (opcuaExport *OpcuaExport, err error) {
 		opcuaContext["certFile"] = opcuaCerts[0]
 		opcuaContext["privateFile"] = opcuaCerts[1]
 		opcuaContext["trustFile"] = "/run/secrets/opcua_client_cert"
+		clientCert := os.Getenv("CLIENT_CERT")
+		if ( clientCert != "") {
+		    opcuaContext["trustFile"] = clientCert
+		}
 	}
 
 	opcuaExport.opcuaBus.opcuaDatab, err = databus.NewDataBus()

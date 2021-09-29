@@ -44,10 +44,20 @@ For more details on Etcd secrets and messagebus endpoint configuration, visit [E
   * Prosys OPCUA client app(https://www.prosysopc.com/products/opc-ua-browser/)
 
 ### Note:
-To connect with OPCUA client apps, User needs to take backup [opcua_client_certificate.der](../build/provision/Certificates/opcua/opcua_client_certificate.der) and copy OPCUA client apps certificate to it.
+* To connect with OPCUA client apps, User needs to take backup [opcua_client_certificate.der](../build/provision/Certificates/opcua/opcua_client_certificate.der) and copy OPCUA client apps certificate to it.
 ```sh
     sudo chmod -R 755 ../../build/provision/Certificates
     cp <OPCUA client apps certificate> ../build/provision/Certificates/opcua/opcua_client_certificate.der
 ```
 Make sure to down all the eii services and up to reflect the changes.
 
+* Running in Kubernetes Environment
+To connect with OPCUA client apps, User needs to copy OPCUA client apps certificate to [opcua_client_certificate.der](../build/helm-eii/eii-provision/Certificates/opcua/opcua_client_certificate.der).
+
+Install provision and deploy helm chart
+```sh
+     $ cd ../build/helm-eii/
+     $ helm install eii-provision eii-provision/
+     $ helm install eii-deploy eii-deploy/
+```
+Access Opcua server using "opc.tcp://<Host IP>:32003" endpoint.

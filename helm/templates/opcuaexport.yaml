@@ -24,9 +24,12 @@ metadata:
   name: {{ .Values.config.opcuaexport.name }}
   namespace: {{ .Values.namespace }}
 spec:
+  type: NodePort
   ports:
-  - port: {{ .Values.config.opcuaexport.opcua_port }}
-    name: tcp
+    - name: opcuaport
+      port: {{ .Values.config.opcuaexport.int.opcua_port }}
+      targetPort: {{ .Values.config.opcuaexport.int.opcua_port }}
+      nodePort: {{ .Values.config.opcuaexport.ext.opcua_port }}
   selector:
     app: opcuaexport
 ---
@@ -109,6 +112,8 @@ spec:
           value: "/run/secrets/etcd/OpcuaExport_client_certificate.pem"
         - name: CONFIGMGR_KEY
           value: "/run/secrets/etcd/OpcuaExport_client_key.pem"
+        - name: CLIENT_CERT
+          value: "/run/secrets/etcd/opcua_client_certificate.der"
         {{ end }}
 
       volumes:
@@ -128,4 +133,6 @@ spec:
             path: OpcuaExport_client_certificate.pem
           - key: OpcuaExport_client_key.pem
             path: OpcuaExport_client_key.pem
+          - key: opcua_client_certificate.der
+            path: opcua_client_certificate.der
       {{ end }}
