@@ -7,7 +7,10 @@
 
 # OpcuaExport
 
-OpcuaExport service serves as as OPCUA server subscribring to classified results from EII message bus(VideoAnalytics) and starts publishing meta data to OPCUA clients
+OpcuaExport service serves as as OPCUA server subscribring to classified results from EII message bus and starts publishing meta data to OPCUA clients.
+
+> IMPORTANT:
+> OpcuaExport service can subscribe classified results from both VideoAnalytics(video) or InfluxDBConnector(time-series) use cases. Please ensure the required service to subscribe from is mentioned in the Subscribers configuration in [config.json](config.json).
 
 ## Configuration
 
