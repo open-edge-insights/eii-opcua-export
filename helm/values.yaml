@@ -1,5 +1,8 @@
 config:
     opcuaexport:
       name: opcuaexport
-      opcua_port: 65003
+      int:
+        opcua_port: 65003
+      ext:
+        opcua_port: 32003
       IPC: false

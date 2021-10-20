@@ -23,7 +23,7 @@ SOFTWARE.
 package main
 
 import (
-	databus "IEdgeInsights/common/libs/OpcuaBusAbstraction/go"
+	databus "../../go"
 	"flag"
 	"fmt"
 	"os"

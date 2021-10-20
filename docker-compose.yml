@@ -67,6 +67,7 @@ services:
       - ca_etcd
       - etcd_OpcuaExport_cert
       - etcd_OpcuaExport_key
+      - opcua_client_cert
 
 volumes:
   vol_opcua:
@@ -80,3 +81,5 @@ secrets:
     file: provision/Certificates/OpcuaExport/OpcuaExport_client_certificate.pem
   etcd_OpcuaExport_key:
     file: provision/Certificates/OpcuaExport/OpcuaExport_client_key.pem
+  opcua_client_cert:
+    file: provision/Certificates/opcua/opcua_client_certificate.der

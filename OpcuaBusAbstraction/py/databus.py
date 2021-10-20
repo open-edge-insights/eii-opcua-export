@@ -23,7 +23,7 @@ SOFTWARE.
 from threading import Event
 from threading import Thread, Lock
 from queue import Queue
-from databusopcua import databOpcua
+from databusopcua import DatabOpcua
 
 # type of DataBus
 BUS_TYPES = {"OPCUA": "opcua:"}
@@ -103,12 +103,12 @@ class DataBus:
             # TODO: Check for unique pub/sub contextName?
             if endpoint.split('//')[0] == BUS_TYPES["OPCUA"]:
                 self.bus_type = BUS_TYPES["OPCUA"]
-                self.bus = databOpcua(self.logger)
+                self.bus = DatabOpcua(self.logger)
             else:
                 raise Exception("Not a supported bus_type")
             self.logger.info(contextcreate)
             try:
-                self.bus.createContext(contextcreate)
+                self.bus.create_context(contextcreate)
             except Exception:
                 self.logger.exception("{} Failure!!!".format(
                     self.context_create.__name__))
@@ -189,7 +189,7 @@ class DataBus:
             if "opcua" in self.bus_type:
                 self.mutex.acquire()
                 try:
-                    self.bus.destroyContext()
+                    self.bus.destroy_context()
                     self.bus.direction = " "
                 except Exception:
                     self.logger.error("{} Failure!!!".format(

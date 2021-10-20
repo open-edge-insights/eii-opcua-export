@@ -71,9 +71,9 @@ class DatabOpcua:
                 "private_file": server/client private key file
                 "trust_file"  : ca cert used to sign server/client cert
         Return/Exception: Will raise Exception in case of errors'''
-        cert_file = context_config["cert_file"]
-        private_file = context_config["private_file"]
-        trust_files = [context_config["trust_file"]]
+        cert_file = context_config["certFile"]
+        private_file = context_config["privateFile"]
+        trust_files = [context_config["trustFile"]]
 
         if not cert_file or not private_file or not trust_files:
             self.dev_mode = True
@@ -84,9 +84,9 @@ class DatabOpcua:
 
         err_msg = open62541W.ContextCreate(endpoint,
                                            self.direction,
-                                           context_config["cert_file"],
-                                           context_config["private_file"],
-                                           [context_config["trust_file"]])
+                                           context_config["certFile"],
+                                           context_config["privateFile"],
+                                           [context_config["trustFile"]])
         py_error_msg = err_msg.decode()
         if py_error_msg != "0":
             self.logger.error("ContextCreate() API failed!")

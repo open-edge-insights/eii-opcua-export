@@ -98,8 +98,8 @@ func NewOpcuaExport() (opcuaExport *OpcuaExport, err error) {
 	opcuaContext["privateFile"] = ""
 	opcuaContext["trustFile"] = ""
 
-	opcuaCerts := []string{"/tmp/opcua_server_cert.der", "/tmp/opcua_server_key.der", "/tmp/ca_cert.der"}
-	opcuaExportKeys := []string{"server_cert", "server_key", "ca_cert"}
+	opcuaCerts := []string{"/tmp/opcua_server_cert.der", "/tmp/opcua_server_key.der"}
+	opcuaExportKeys := []string{"server_cert", "server_key"}
 
 	if !opcuaExport.devMode {
 		i := 0
@@ -109,12 +109,16 @@ func NewOpcuaExport() (opcuaExport *OpcuaExport, err error) {
 				glog.Errorf("OPCUA decoding of cert files failed: %v", err)
 				return opcuaExport, err
 			}
-			err = ioutil.WriteFile(opcuaCerts[i], opcuaCertFile, 0644)
+			err = ioutil.WriteFile(opcuaCerts[i], opcuaCertFile, 0400)
 			i++
 		}
 		opcuaContext["certFile"] = opcuaCerts[0]
 		opcuaContext["privateFile"] = opcuaCerts[1]
-		opcuaContext["trustFile"] = opcuaCerts[2]
+		opcuaContext["trustFile"] = "/run/secrets/opcua_client_cert"
+		clientCert := os.Getenv("CLIENT_CERT")
+		if ( clientCert != "") {
+		    opcuaContext["trustFile"] = clientCert
+		}
 	}
 
 	opcuaExport.opcuaBus.opcuaDatab, err = databus.NewDataBus()

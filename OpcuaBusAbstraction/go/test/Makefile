@@ -10,7 +10,7 @@ INCLUDE = -I../include -I../../
 SERVER_CERTS = /etc/ssl/opcua
 CLIENT_CERTS = /etc/ssl/opcua
 CA_CERTS = /etc/ssl/ca
-TOPICS = cam_serial1_results,cam_serial2_results
+TOPICS = opcua_cam_serial1_results,opcua_cam_serial2_results
 HOST = localhost
 PORT = 65003
 MAX_SAFESTRING_SIZE = 60
@@ -51,7 +51,7 @@ pub: build
 				  -topics $(TOPICS) \
 				  -certFile $(SERVER_CERTS)/opcua_server_certificate.der \
 			      -privateFile $(SERVER_CERTS)/opcua_server_key.der \
-				  -trustFile $(CA_CERTS)/ca_certificate.der
+				  -trustFile $(CLIENT_CERTS)/opcua_client_certificate.der
 
 sub: build
 	@echo "Establish connection to opcua secure server and start subscribing the data.."
@@ -59,7 +59,7 @@ sub: build
 				  -topics $(TOPICS) \
 				  -certFile $(CLIENT_CERTS)/opcua_client_certificate.der \
 	              -privateFile $(CLIENT_CERTS)/opcua_client_key.der \
-		          -trustFile $(CA_CERTS)/ca_certificate.der
+		          -trustFile $(SERVER_CERTS)/opcua_server_certificate.der
 
 pub_insecure: build
 	@echo "Starting the insecure opcua server and start publishing the data.."
