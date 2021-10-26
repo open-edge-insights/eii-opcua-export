@@ -109,7 +109,7 @@ func NewOpcuaExport() (opcuaExport *OpcuaExport, err error) {
 				glog.Errorf("OPCUA decoding of cert files failed: %v", err)
 				return opcuaExport, err
 			}
-			err = ioutil.WriteFile(opcuaCerts[i], opcuaCertFile, 0644)
+			err = ioutil.WriteFile(opcuaCerts[i], opcuaCertFile, 0400)
 			i++
 		}
 		opcuaContext["certFile"] = opcuaCerts[0]
