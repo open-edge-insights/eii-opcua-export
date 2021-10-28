@@ -59,6 +59,10 @@ COPY . ./OpcuaExport/
 
 RUN cd OpcuaExport && go build OpcuaExport.go
 
+ARG EII_UID
+RUN chown -R ${EII_UID}:${EII_UID} /tmp/ && \
+    chmod -R 760 /tmp/
+
 HEALTHCHECK NONE
 
 ENTRYPOINT ["./OpcuaExport/OpcuaExport"]
