@@ -12,7 +12,7 @@ The python example program demonstrates publish and subscription over OPCUA bus 
   **Note**: It is highly recommended that you use a python virtual environment to
   install the python packages, so that the system python installation doesn't
   get altered. Details on setting up and using python virtual environment can
-  be found here: https://www.geeksforgeeks.org/python-virtual-environment/
+  be found here: <https://www.geeksforgeeks.org/python-virtual-environment/>
 
 * Install open62541 library dependencies (mbedTLS, python dev):
 
@@ -37,7 +37,6 @@ The python example program demonstrates publish and subscription over OPCUA bus 
     export PYTHONPATH=..
     ```
 
-
 * Copying certs and keys:
   * Copy opcua client cert and key to /etc/ssl/opcua
   * Copy CA cert to /etc/ssl/ca
@@ -46,7 +45,7 @@ The python example program demonstrates publish and subscription over OPCUA bus 
 
 ### 1. Pre-requisite
 
-> **NOTE**:
+> **NOTE:**
 > The `Pre-requisite` section below is `only` needed if executing from
 > the IEI repo. It should not be run from IEI dist libs path
 > (/opt/intel/iei/dist_libs). If run, it would fail and one may have to re-create

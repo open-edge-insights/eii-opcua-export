@@ -7,9 +7,10 @@ The C example program demonstrates publish and subscription over OPCUA bus only 
 
 ### 1. Pre-requisite
 
-> **NOTE**:
+> **NOTE:**
 > The `Pre-requisite` section below is `only` needed if executing from
 > the EII repo.
+
   ```sh
   sudo apt-get install libmbedtls-dev
   make clean
@@ -50,5 +51,3 @@ make sub_insecure
 make clean
 ```
 
-
-```
