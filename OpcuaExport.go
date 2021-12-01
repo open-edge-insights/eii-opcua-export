@@ -23,9 +23,9 @@ SOFTWARE.
 package main
 
 import (
-	eiicfgmgr "ConfigMgr/eiiconfigmgr"
-	eiimsgbus "EIIMessageBus/eiimsgbus"
-	databus "IEdgeInsights/OpcuaExport/OpcuaBusAbstraction/go"
+	eiicfgmgr  "github.com/open-edge-insights/eii-configmgr-go/eiiconfigmgr"
+	eiimsgbus "github.com/open-edge-insights/eii-messagebus-go/eiimsgbus"
+	databus "opcuabusobstraction/go"
 
 	"encoding/base64"
 	"flag"

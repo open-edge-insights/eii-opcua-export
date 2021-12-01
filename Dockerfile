@@ -34,7 +34,7 @@ ARG CMAKE_INSTALL_PREFIX
 ENV CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
 COPY --from=common ${CMAKE_INSTALL_PREFIX}/include ${CMAKE_INSTALL_PREFIX}/include
 COPY --from=common ${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_INSTALL_PREFIX}/lib
-COPY --from=common /eii/common/util/util.go common/util/util.go
+COPY --from=common /eii/common/util/util.go ./OpcuaExport//util/util.go
 COPY --from=common  ${CMAKE_INSTALL_PREFIX}/lib/libsafestring.so /usr/local/lib
 COPY --from=common ${GOPATH}/src ${GOPATH}/src
 COPY --from=common /eii/common/libs/EIIMessageBus/go/EIIMessageBus $GOPATH/src/EIIMessageBus
@@ -65,7 +65,7 @@ ENV PATH="$PATH:/usr/local/go/bin" \
 ENV CGO_CFLAGS="$CGO_FLAGS -I ${CMAKE_INSTALL_PREFIX}/include -O2 -D_FORTIFY_SOURCE=2 -Werror=format-security -fstack-protector-strong -fPIC" \
     CGO_LDFLAGS="$CGO_LDFLAGS -L${CMAKE_INSTALL_PREFIX}/lib -z noexecstack -z relro -z now"
 
-RUN go build -o $ARTIFACTS/OpcuaExport/OpcuaExport OpcuaExport/OpcuaExport.go
+RUN cd OpcuaExport/ && GO111MODULE=on go build -o $ARTIFACTS/OpcuaExport/OpcuaExport OpcuaExport.go
 
 RUN mv OpcuaExport/schema.json $ARTIFACTS
 
