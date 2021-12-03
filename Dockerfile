@@ -78,7 +78,7 @@ RUN groupadd $EII_USER_NAME -g $EII_UID && \
     useradd -r -u $EII_UID -g $EII_USER_NAME $EII_USER_NAME
 
 RUN apt-get update && \
-    apt-get install -y libmbedtls-dev libcjson1 libzmq5
+    apt-get install -y libmbedtls-dev libcjson1 libzmq5 zlib1g
 
 WORKDIR /app
 
