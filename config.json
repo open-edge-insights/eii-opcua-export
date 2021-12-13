@@ -1,5 +1,6 @@
 {
     "config" : {
+        "cert_type": ["zmq", "der"],
         "OpcuaDatabusTopics": ["opcua_cam_serial1_results", "opcua_cam_serial2_results", "opcua_point_classifier_results"],
         "OpcuaExportCfg": "opcua,0.0.0.0:65003"
     },

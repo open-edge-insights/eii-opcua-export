@@ -52,9 +52,7 @@ services:
       ETCD_HOST: ${ETCD_HOST}
       ETCD_CLIENT_PORT: ${ETCD_CLIENT_PORT}
       ETCD_PREFIX: ${ETCD_PREFIX}
-
       # MessageBus Endpoint Configuration
-      CertType: "zmq,der"
     networks:
       - eii
     ports:
@@ -63,11 +61,9 @@ services:
     volumes:
       - "vol_eii_socket:${SOCKET_DIR}"
       - "vol_opcua:/tmp"
-    secrets:
-      - ca_etcd
-      - etcd_OpcuaExport_cert
-      - etcd_OpcuaExport_key
-      - opcua_client_cert
+      - ./Certificates/OpcuaExport:/run/secrets/OpcuaExport
+      - ./Certificates/rootca:/run/secrets/rootca
+      - ./Certificates/opcua:/run/secrets/opcua
 
 volumes:
   vol_opcua:
@@ -75,11 +71,3 @@ volumes:
     driver_opts:
       type: tmpfs
       device: tmpfs
-
-secrets:
-  etcd_OpcuaExport_cert:
-    file: provision/Certificates/OpcuaExport/OpcuaExport_client_certificate.pem
-  etcd_OpcuaExport_key:
-    file: provision/Certificates/OpcuaExport/OpcuaExport_client_key.pem
-  opcua_client_cert:
-    file: provision/Certificates/opcua/opcua_client_certificate.der
