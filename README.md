@@ -31,7 +31,7 @@ For more details on Etcd secrets and messagebus endpoint configuration, visit [E
        can access the certificates.
 
         ```sh
-            sudo chmod -R 755 ../../build/provision/Certificates
+            sudo chmod -R 755 ../../build/Certificates
         ```
 
         > **Caution**: This step will make the certs insecure. Please do not do it on a production machine.
@@ -48,24 +48,33 @@ For more details on Etcd secrets and messagebus endpoint configuration, visit [E
 
 ### Note
 
-* To connect with OPCUA client apps, User needs to take backup [opcua_client_certificate.der](../build/provision/Certificates/opcua/opcua_client_certificate.der) and copy OPCUA client apps certificate to it.
+* To connect with OPCUA client apps, User needs to take backup [opcua_client_certificate.der](../build/Certificates/opcua/opcua_client_certificate.der) and copy OPCUA client apps certificate to it.
 
 ```sh
-    sudo chmod -R 755 ../../build/provision/Certificates
-    cp <OPCUA client apps certificate> ../build/provision/Certificates/opcua/opcua_client_certificate.der
+    sudo chmod -R 755 ../../build/Certificates
+    cp <OPCUA client apps certificate> ../build/Certificates/opcua/opcua_client_certificate.der
 ```
 
 Make sure to down all the eii services and up to reflect the changes.
 
 - Running in Kubernetes Environment
-To connect with OPCUA client apps, User needs to copy OPCUA client apps certificate to [opcua_client_certificate.der](../build/helm-eii/eii-provision/Certificates/opcua/opcua_client_certificate.der).
 
 Install provision and deploy helm chart
 
 ```sh
      cd ../build/helm-eii/
-     helm install eii-provision eii-provision/
-     helm install eii-deploy eii-deploy/
+     helm install eii-gen-cert eii-gen-cert/         
+```
+This will generate the Certificates under `eii-deploy/Certificates` folder. 
+```sh
+    sudo chmod -R 755 eii-deploy/Certificates   
+```
+
+To connect with OPCUA client apps, User needs to copy OPCUA client apps certificate to [opcua_client_certificate.der](../build/helm-eii/eii-deploy/Certificates/opcua/opcua_client_certificate.der).
+
+Deploy Helm Chart
+```sh
+   helm install eii-deploy eii-deploy/
 ```
 
 Access Opcua server using "opc.tcp://<Host IP>:32003" endpoint.
