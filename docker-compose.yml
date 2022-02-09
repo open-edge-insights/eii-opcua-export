@@ -61,9 +61,9 @@ services:
     volumes:
       - "vol_eii_socket:${SOCKET_DIR}"
       - "vol_opcua:/tmp"
-      - ./Certificates/OpcuaExport:/run/secrets/OpcuaExport
-      - ./Certificates/rootca:/run/secrets/rootca
-      - ./Certificates/opcua:/run/secrets/opcua
+      - ./Certificates/OpcuaExport:/run/secrets/OpcuaExport:ro
+      - ./Certificates/rootca/cacert.pem:/run/secrets/rootca/cacert.pem:ro
+      - ./Certificates/opcua:/run/secrets/opcua:ro
 
 volumes:
   vol_opcua:
