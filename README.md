@@ -55,7 +55,7 @@ For more details on Etcd secrets and messagebus endpoint configuration, visit [E
     cp <OPCUA client apps certificate> ../build/Certificates/opcua/opcua_client_certificate.der
 ```
 
-Make sure to down all the eii services and up to reflect the changes.
+Make sure not to bring down ConfigMgrAgent(ia_configmgr_agent) service, however restart necessary services like ia_opcua_export to reflect the changes.
 
 - Running in Kubernetes Environment
 
