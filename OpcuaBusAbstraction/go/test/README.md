@@ -8,7 +8,10 @@ The go example program demonstrates publish and subscription over OPCUA bus only
 ### 1. Pre-requisite
 
   ```sh
-  sudo apt-get install libmbedtls-dev
+  wget -q --show-progress https://tls.mbed.org/code/releases/mbedtls-2.16.6-gpl.tgz
+  tar xf mbedtls-2.16.6-gpl.tgz
+  cd mbedtls-2.16.6
+  make install
   make clean
   make build_safestring_lib
   ```

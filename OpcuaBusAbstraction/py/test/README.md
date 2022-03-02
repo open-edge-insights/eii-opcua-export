@@ -17,7 +17,10 @@ The python example program demonstrates publish and subscription over OPCUA bus 
 * Install open62541 library dependencies (mbedTLS, python dev):
 
   ```sh
-  sudo apt-get install -y libmbedtls-dev python3-dev
+  wget -q --show-progress https://tls.mbed.org/code/releases/mbedtls-2.16.6-gpl.tgz && tar xf mbedtls-2.16.6-gpl.tgz
+  cd mbedtls-2.16.6
+  make install
+  sudo apt-get install -y python3-dev
   ```
 
   > **NOTE**: If `OpcuaBusAbstraction` module is referred from dist_libs path, make sure that the `sub` client is also run on Ubuntu > 18.04 as the dist libs package is been created by a container with ubuntu 18.04 as the base image. If working from IEI repo,
@@ -52,7 +55,10 @@ The python example program demonstrates publish and subscription over OPCUA bus 
 > dist_libs to overcome any issue thereafter.
 
   ```sh
-  sudo apt-get install libmbedtls-dev
+  wget -q --show-progress https://tls.mbed.org/code/releases/mbedtls-2.16.6-gpl.tgz
+  tar xf mbedtls-2.16.6-gpl.tgz
+  cd mbedtls-2.16.6
+  make install
   make clean
   make build_safestring_lib
   make build
