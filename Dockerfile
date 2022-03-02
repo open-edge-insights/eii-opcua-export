@@ -32,6 +32,28 @@ RUN apt-get update && \
 WORKDIR ${GOPATH}/src/IEdgeInsights
 ARG CMAKE_INSTALL_PREFIX
 ENV CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+
+# Install libzmq
+RUN rm -rf deps && \
+    mkdir -p deps && \
+    cd deps && \
+    wget -q --show-progress https://github.com/zeromq/libzmq/releases/download/v4.3.4/zeromq-4.3.4.tar.gz -O zeromq.tar.gz && \
+    tar xf zeromq.tar.gz && \
+    cd zeromq-4.3.4 && \
+    ./configure --prefix=${CMAKE_INSTALL_PREFIX} && \
+    make install
+
+# Install cjson
+RUN rm -rf deps && \
+    mkdir -p deps && \
+    cd deps && \
+    wget -q --show-progress https://github.com/DaveGamble/cJSON/archive/v1.7.12.tar.gz -O cjson.tar.gz && \
+    tar xf cjson.tar.gz && \
+    cd cJSON-1.7.12 && \
+    mkdir build && cd build && \
+    cmake -DCMAKE_INSTALL_INCLUDEDIR=${CMAKE_INSTALL_PREFIX}/include -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} .. && \
+    make install
+
 COPY --from=common ${CMAKE_INSTALL_PREFIX}/include ${CMAKE_INSTALL_PREFIX}/include
 COPY --from=common ${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_INSTALL_PREFIX}/lib
 COPY --from=common /eii/common/util/util.go ./OpcuaExport//util/util.go
@@ -41,6 +63,7 @@ COPY --from=common /eii/common/libs/EIIMessageBus/go/EIIMessageBus $GOPATH/src/E
 COPY --from=common /eii/common/libs/ConfigMgr/go/ConfigMgr $GOPATH/src/ConfigMgr
 
 COPY . ./OpcuaExport/
+
 ARG ARTIFACTS
 RUN mkdir $ARTIFACTS \
           $ARTIFACTS/OpcuaExport \
@@ -78,7 +101,7 @@ RUN groupadd $EII_USER_NAME -g $EII_UID && \
     useradd -r -u $EII_UID -g $EII_USER_NAME $EII_USER_NAME
 
 RUN apt-get update && \
-    apt-get install -y libmbedtls-dev libcjson1 libzmq5 zlib1g
+    apt-get install -y libmbedtls-dev
 
 WORKDIR /app
 
