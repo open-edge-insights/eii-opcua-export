@@ -1,23 +1,25 @@
-**Contents**
+# Contents
 
-- [OpcuaExport](#opcuaexport)
-  - [Configuration](#configuration)
-  - [Service bring up](#service-bring-up)
-  - [Known issues](#known-issues)
+- [Contents](#contents)
+  - [OpcuaExport](#opcuaexport)
+    - [Configuration](#configuration)
+    - [Service bring up](#service-bring-up)
+    - [OPCUA client apps](#opcua-client-apps)
 
-# OpcuaExport
+## OpcuaExport
 
-OpcuaExport service serves as as OPCUA server subscribring to classified results from EII message bus and starts publishing meta data to OPCUA clients.
+OpcuaExport service serves as as OPCUA server subscribring to classified results from message bus and starts publishing meta data to OPCUA clients.
 
 > IMPORTANT:
 > OpcuaExport service can subscribe classified results from both VideoAnalytics(video) or InfluxDBConnector(time-series) use cases. Please ensure the required service to subscribe from is mentioned in the Subscribers configuration in [config.json](config.json).
+> In this document, you will find labels of 'Edge Insights for Industrial (EII)' for filenames, paths, code snippets, and so on. Consider the references of EII as Open Edge Insights (OEI). This is due to the product name change of EII as OEI.
 
-## Configuration
+### Configuration
 
 For more details on Etcd secrets and messagebus endpoint configuration, visit [Etcd_Secrets_Configuration.md](https://github.com/open-edge-insights/eii-core/blob/master/Etcd_Secrets_Configuration.md) and
 [MessageBus Configuration](https://github.com/open-edge-insights/eii-core/blob/master/common/libs/ConfigMgr/README.md#interfaces) respectively.
 
-## Service bring up
+### Service bring up
 
 - Please use below steps to generate opcua client certificates before running test client subscriber for production mode.
 
@@ -38,7 +40,7 @@ For more details on Etcd secrets and messagebus endpoint configuration, visit [E
 
 - To run a test subscriber follow README at [OpcuaExport/OpcuaBusAbstraction/c/test](OpcuaBusAbstraction/c/test)
 
-## OPCUA client apps
+### OPCUA client apps
 
 - OpcuaExport service has been validated with below 3rd party OPCUA client apps:
   - OPCUA CTT tool (<https://opcfoundation.org/developer-tools/certification-test-tools/opc-ua-compliance-test-tool-uactt/>)
@@ -46,9 +48,8 @@ For more details on Etcd secrets and messagebus endpoint configuration, visit [E
   - Integrated Objects (<https://integrationobjects.com/sioth-opc/sioth-opc-unified-architecture/opc-ua-client/>)
   - Prosys OPCUA client app(<https://www.prosysopc.com/products/opc-ua-browser/>)
 
-### Note
-
-* To connect with OPCUA client apps, User needs to take backup [opcua_client_certificate.der](../build/Certificates/opcua/opcua_client_certificate.der) and copy OPCUA client apps certificate to it.
+>**Note:**
+> To connect with OPCUA client apps, User needs to take backup [opcua_client_certificate.der](../build/Certificates/opcua/opcua_client_certificate.der) and copy OPCUA client apps certificate to it.
 
 ```sh
     sudo chmod -R 755 ../../build/Certificates
@@ -65,7 +66,9 @@ Install provision and deploy helm chart
      cd ../build/helm-eii/
      helm install eii-gen-cert eii-gen-cert/         
 ```
-This will generate the Certificates under `eii-deploy/Certificates` folder. 
+
+This will generate the Certificates under `eii-deploy/Certificates` folder.
+
 ```sh
     sudo chmod -R 755 eii-deploy/Certificates   
 ```
@@ -73,6 +76,7 @@ This will generate the Certificates under `eii-deploy/Certificates` folder.
 To connect with OPCUA client apps, User needs to copy OPCUA client apps certificate to [opcua_client_certificate.der](../build/helm-eii/eii-deploy/Certificates/opcua/opcua_client_certificate.der).
 
 Deploy Helm Chart
+
 ```sh
    helm install eii-deploy eii-deploy/
 ```

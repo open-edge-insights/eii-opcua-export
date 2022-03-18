@@ -5,11 +5,12 @@ The C example program demonstrates publish and subscription over OPCUA bus only 
 
 ## How to Test from present working directory
 
-### 1. Pre-requisite
+### 1. Prerequisite
 
 > **NOTE:**
-> The `Pre-requisite` section below is `only` needed if executing from
-> the EII repo.
+>
+> - In this document, you will find labels of 'Edge Insights for Industrial (EII)' for filenames, paths, code snippets, and so on. Consider the references of EII as Open Edge Insights (OEI). This is due to the product name change of EII as OEI.
+> - The `Prerequisite` section below is `only` needed if executing from the OEI repo.
 
   ```sh
   wget -q --show-progress https://tls.mbed.org/code/releases/mbedtls-2.16.6-gpl.tgz
@@ -22,13 +23,13 @@ The C example program demonstrates publish and subscription over OPCUA bus only 
 
 ### 2. Testing with security enabled
 
-* Start publisher, publish and destroy
+- Start publisher, publish and destroy
 
 ```sh
 make pub
 ```
 
-* Start subscriber, subscribe and destroy
+- Start subscriber, subscribe and destroy
 
 ```sh
 make sub
@@ -36,13 +37,13 @@ make sub
 
 ### 3. Testing with security disabled
 
-* Start publisher, publish and destroy
+- Start publisher, publish and destroy
 
 ```sh
 make pub_insecure
 ```
 
-* Start subscriber, subscribe and destroy
+- Start subscriber, subscribe and destroy
 
 ```sh
 make sub_insecure
@@ -53,4 +54,3 @@ make sub_insecure
 ```sh
 make clean
 ```
-
