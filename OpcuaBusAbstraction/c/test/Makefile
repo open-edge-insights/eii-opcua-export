@@ -11,7 +11,7 @@ CLIENT_CERTS = /etc/ssl/opcua
 CA_CERTS = /etc/ssl/ca
 WRAPPERS_PATH = $(SOURCE_FILE)/open62541_wrappers.c
 TOPICS = opcua_cam_serial1_results,opcua_cam_serial2_results
-SECURE_CFLAGS=-fstack-protector-strong -fPIE -fPIC -O2 -D_FORTIFY_SOURCE=2 -Wformat -Wformat-security
+SECURE_CFLAGS=-fstack-protector-strong -fno-strict-overflow -fno-delete-null-pointer-checks -fwrapv -fPIE -fPIC -O2 -D_FORTIFY_SOURCE=2 -Wformat -Wformat-security
 SECURE_LDFLAGS=-z noexecstack -z relro -z now -pie
 HOST = "localhost"
 PORT = 65003

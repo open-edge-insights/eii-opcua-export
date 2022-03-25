@@ -1,66 +1,84 @@
-**Contents**
+# Contents
 
-- [OpcuaExport](#opcuaexport)
-  - [Configuration](#configuration)
-  - [Service bring up](#service-bring-up)
-  - [Known issues](#known-issues)
+- [Contents](#contents)
+  - [OpcuaExport](#opcuaexport)
+    - [Configuration](#configuration)
+    - [Service bring up](#service-bring-up)
+    - [OPCUA client apps](#opcua-client-apps)
 
-# OpcuaExport
+## OpcuaExport
 
-OpcuaExport service serves as as OPCUA server subscribring to classified results from EII message bus and starts publishing meta data to OPCUA clients.
+OpcuaExport service serves as as OPCUA server subscribring to classified results from message bus and starts publishing meta data to OPCUA clients.
 
 > IMPORTANT:
 > OpcuaExport service can subscribe classified results from both VideoAnalytics(video) or InfluxDBConnector(time-series) use cases. Please ensure the required service to subscribe from is mentioned in the Subscribers configuration in [config.json](config.json).
+> In this document, you will find labels of 'Edge Insights for Industrial (EII)' for filenames, paths, code snippets, and so on. Consider the references of EII as Open Edge Insights (OEI). This is due to the product name change of EII as OEI.
 
-## Configuration
+### Configuration
 
 For more details on Etcd secrets and messagebus endpoint configuration, visit [Etcd_Secrets_Configuration.md](https://github.com/open-edge-insights/eii-core/blob/master/Etcd_Secrets_Configuration.md) and
 [MessageBus Configuration](https://github.com/open-edge-insights/eii-core/blob/master/common/libs/ConfigMgr/README.md#interfaces) respectively.
 
-## Service bring up
+### Service bring up
 
-* Please use below steps to generate opcua client certificates before running test client subscriber for production mode.
+- Please use below steps to generate opcua client certificates before running test client subscriber for production mode.
 
-    1. Please go through the below sections to have OpcuaExport 
+    1. Please go through the below sections to have OpcuaExport
        service built and launch it:
         - [../README.md#generate-deployment-and-configuration-files](https://github.com/open-edge-insights/eii-core/blob/master/README.md#generate-deployment-and-configuration-files)
         - [../README.md#provision](https://github.com/open-edge-insights/eii-core/blob/master/README.md#provision)
         - [../README.md#build-and-run-eii-videotimeseries-use-cases](https://github.com/open-edge-insights/eii-core/blob/master/README.md#build-and-run-eii-videotimeseries-use-cases)
 
-    2. Update opcua client certificate access so that sample test program 
+    2. Update opcua client certificate access so that sample test program
        can access the certificates.
 
         ```sh
-            sudo chmod -R 755 ../../build/provision/Certificates
+            sudo chmod -R 755 ../../build/Certificates
         ```
 
         > **Caution**: This step will make the certs insecure. Please do not do it on a production machine.
 
-* To run a test subscriber follow README at [OpcuaExport/OpcuaBusAbstraction/c/test](OpcuaBusAbstraction/c/test)
+- To run a test subscriber follow README at [OpcuaExport/OpcuaBusAbstraction/c/test](OpcuaBusAbstraction/c/test)
 
-## OPCUA client apps
+### OPCUA client apps
 
-* OpcuaExport service has been validated with below 3rd party OPCUA client apps:
-  * OPCUA CTT tool (https://opcfoundation.org/developer-tools/certification-test-tools/opc-ua-compliance-test-tool-uactt/)
-  * UaExpert (https://www.unified-automation.com/downloads/opc-ua-clients.html)
-  * Integrated Objects (https://integrationobjects.com/sioth-opc/sioth-opc-unified-architecture/opc-ua-client/)
-  * Prosys OPCUA client app(https://www.prosysopc.com/products/opc-ua-browser/)
+- OpcuaExport service has been validated with below 3rd party OPCUA client apps:
+  - OPCUA CTT tool (<https://opcfoundation.org/developer-tools/certification-test-tools/opc-ua-compliance-test-tool-uactt/>)
+  - UaExpert (<https://www.unified-automation.com/downloads/opc-ua-clients.html>)
+  - Integrated Objects (<https://integrationobjects.com/sioth-opc/sioth-opc-unified-architecture/opc-ua-client/>)
+  - Prosys OPCUA client app(<https://www.prosysopc.com/products/opc-ua-browser/>)
 
-### Note:
-* To connect with OPCUA client apps, User needs to take backup [opcua_client_certificate.der](../build/provision/Certificates/opcua/opcua_client_certificate.der) and copy OPCUA client apps certificate to it.
+>**Note:**
+> To connect with OPCUA client apps, User needs to take backup [opcua_client_certificate.der](../build/Certificates/opcua/opcua_client_certificate.der) and copy OPCUA client apps certificate to it.
+
 ```sh
-    sudo chmod -R 755 ../../build/provision/Certificates
-    cp <OPCUA client apps certificate> ../build/provision/Certificates/opcua/opcua_client_certificate.der
+    sudo chmod -R 755 ../../build/Certificates
+    cp <OPCUA client apps certificate> ../build/Certificates/opcua/opcua_client_certificate.der
 ```
-Make sure to down all the eii services and up to reflect the changes.
 
-* Running in Kubernetes Environment
-To connect with OPCUA client apps, User needs to copy OPCUA client apps certificate to [opcua_client_certificate.der](../build/helm-eii/eii-provision/Certificates/opcua/opcua_client_certificate.der).
+Make sure not to bring down ConfigMgrAgent(ia_configmgr_agent) service, however restart necessary services like ia_opcua_export to reflect the changes.
+
+- Running in Kubernetes Environment
 
 Install provision and deploy helm chart
+
 ```sh
-     $ cd ../build/helm-eii/
-     $ helm install eii-provision eii-provision/
-     $ helm install eii-deploy eii-deploy/
+     cd ../build/helm-eii/
+     helm install eii-gen-cert eii-gen-cert/         
 ```
+
+This will generate the Certificates under `eii-deploy/Certificates` folder.
+
+```sh
+    sudo chmod -R 755 eii-deploy/Certificates   
+```
+
+To connect with OPCUA client apps, User needs to copy OPCUA client apps certificate to [opcua_client_certificate.der](../build/helm-eii/eii-deploy/Certificates/opcua/opcua_client_certificate.der).
+
+Deploy Helm Chart
+
+```sh
+   helm install eii-deploy eii-deploy/
+```
+
 Access Opcua server using "opc.tcp://<Host IP>:32003" endpoint.

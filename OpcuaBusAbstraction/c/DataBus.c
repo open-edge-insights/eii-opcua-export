@@ -23,33 +23,32 @@ ContextCreate(struct ContextConfig contextConfig) {
     char *delimeter = "://";
     char *endpointStr = contextConfig.endpoint;
     char *endpointArr = strtok(endpointStr, delimeter);
-    if(endpointArr != NULL)
-    {
+    if (endpointArr != NULL) {
         for (int i = 0; endpointArr != NULL; i++) {
             hostNamePort[i] = endpointArr;
             endpointArr = strtok(NULL, delimeter);
         }
-        if(hostNamePort[1] != NULL && hostNamePort[2] != NULL) {
+        if (hostNamePort[1] != NULL && hostNamePort[2] != NULL) {
             hostname = hostNamePort[1];
             port = atoi(hostNamePort[2]);
             port = abs(port);
-            if((!strcmp(contextConfig.certFile, "")) && (!strcmp(contextConfig.privateFile, "")) \
-            && (!strcmp(contextConfig.trustFile[0], ""))){
+            if ((!strcmp(contextConfig.certFile, "")) && (!strcmp(contextConfig.privateFile, "")) \
+            && (!strcmp(contextConfig.trustFile[0], ""))) {
                 devmode = true;
             }
             if (hostname != NULL) {
-                if(devmode){
-                    if(!strcmp(contextConfig.direction, "PUB")) {
+                if (devmode) {
+                    if (!strcmp(contextConfig.direction, "PUB")) {
                         errorMsg = serverContextCreate(hostname, port);
-                    } else if(!strcmp(contextConfig.direction, "SUB")) {
+                    } else if (!strcmp(contextConfig.direction, "SUB")) {
                         errorMsg = clientContextCreate(hostname, port);
                     }
                 } else {
-                    if(!strcmp(contextConfig.direction, "PUB")) {
+                    if (!strcmp(contextConfig.direction, "PUB")) {
                         errorMsg = serverContextCreateSecured(hostname, port, contextConfig.certFile,
                                                               contextConfig.privateFile, contextConfig.trustFile,
                                                               contextConfig.trustedListSize);
-                    } else if(!strcmp(contextConfig.direction, "SUB")) {
+                    } else if (!strcmp(contextConfig.direction, "SUB")) {
                         errorMsg = clientContextCreateSecured(hostname, port, contextConfig.certFile,
                                                               contextConfig.privateFile, contextConfig.trustFile,
                                                               contextConfig.trustedListSize);

@@ -23,9 +23,9 @@ SOFTWARE.
 package main
 
 import (
-	eiicfgmgr "ConfigMgr/eiiconfigmgr"
-	eiimsgbus "EIIMessageBus/eiimsgbus"
-	databus "IEdgeInsights/OpcuaExport/OpcuaBusAbstraction/go"
+	eiicfgmgr  "github.com/open-edge-insights/eii-configmgr-go/eiiconfigmgr"
+	eiimsgbus "github.com/open-edge-insights/eii-messagebus-go/eiimsgbus"
+	databus "opcuabusobstraction/go"
 
 	"encoding/base64"
 	"flag"
@@ -114,7 +114,7 @@ func NewOpcuaExport() (opcuaExport *OpcuaExport, err error) {
 		}
 		opcuaContext["certFile"] = opcuaCerts[0]
 		opcuaContext["privateFile"] = opcuaCerts[1]
-		opcuaContext["trustFile"] = "/run/secrets/opcua_client_cert"
+		opcuaContext["trustFile"] = "/run/secrets/opcua/opcua_client_certificate.der"
 		clientCert := os.Getenv("CLIENT_CERT")
 		if ( clientCert != "") {
 		    opcuaContext["trustFile"] = clientCert

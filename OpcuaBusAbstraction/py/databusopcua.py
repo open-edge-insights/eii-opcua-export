@@ -143,8 +143,8 @@ class DatabOpcua:
         if (self.direction == "SUB") and (trig == "START"):
             global G_QUEUE
             G_QUEUE = queue
-            err_msg = open62541W.Subscribe(topic_configs, topic_config_count, trig,
-                                           cb_func)
+            err_msg = open62541W.Subscribe(topic_configs, topic_config_count,
+                                           trig, cb_func)
             py_error_msg = err_msg.decode()
             if py_error_msg != "0":
                 self.logger.error("Subscribe() API failed!")

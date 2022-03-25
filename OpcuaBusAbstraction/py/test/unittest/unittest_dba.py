@@ -42,12 +42,12 @@ CONTEXT_CONFIG = {"endpoint": "opcua://localhost:65003",
                   "certFile": "/etc/ssl/opcua/opcua_client_certificate.der",
                   "privateFile": "/etc/ssl/opcua/opcua_client_key.der",
                   "trustFile": "/etc/ssl/ca/ca_certificate.der"
-                 }
+                  }
 
 TOPIC_CONFIG = {"ns": "StreamManager",
                 "name": "classifier_results",
                 "dType": "string"
-               }
+                }
 
 
 class TestDBA(unittest.TestCase):
@@ -74,7 +74,7 @@ class TestDBA(unittest.TestCase):
                               "privateFile": "/etc/ssl/opcua/opcua\
                               _client_key.der",
                               "trustFile": "/etc/ssl/ca/ca_certificate.der"
-                             }
+                              }
 
         eiidbussub.ContextCreate(context_config_sub)
         topic_configs = []
