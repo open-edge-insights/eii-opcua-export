@@ -11,7 +11,10 @@ The C example program demonstrates publish and subscription over OPCUA bus only 
 > The `Pre-requisite` section below is `only` needed if executing from
 > the EII repo.
   ```sh
-  sudo apt-get install libmbedtls-dev
+  wget -q --show-progress https://tls.mbed.org/code/releases/mbedtls-2.16.6-gpl.tgz && \
+  tar xf mbedtls-2.16.6-gpl.tgz && \
+  cd mbedtls-2.16.6 && \
+  make install
   make clean
   make build_safestring_lib
   ```

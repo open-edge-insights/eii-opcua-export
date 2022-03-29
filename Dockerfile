@@ -26,8 +26,13 @@ ARG ARTIFACTS="/artifacts"
 FROM ia_common:$EII_VERSION as common
 FROM ia_eiibase:${EII_VERSION} as builder
 LABEL description="OpcuaExport image"
-RUN apt-get update && \
-    apt-get install -y libmbedtls-dev
+ARG CMAKE_INSTALL_PREFIX
+RUN rm -rf mbed
+RUN mkdir -p mbed && cd mbed && \
+    wget -q --show-progress https://tls.mbed.org/code/releases/mbedtls-2.16.6-gpl.tgz && \
+    tar xf mbedtls-2.16.6-gpl.tgz && \
+    cd mbedtls-2.16.6 && \
+    PREFIX=${CMAKE_INSTALL_PREFIX} make install
 
 WORKDIR ${GOPATH}/src/IEdgeInsights
 ARG CMAKE_INSTALL_PREFIX
@@ -77,9 +82,6 @@ ARG EII_USER_NAME
 RUN groupadd $EII_USER_NAME -g $EII_UID && \
     useradd -r -u $EII_UID -g $EII_USER_NAME $EII_USER_NAME
 
-RUN apt-get update && \
-    apt-get install -y libmbedtls-dev
-
 WORKDIR /app
 
 ARG CMAKE_INSTALL_PREFIX
@@ -87,6 +89,8 @@ ENV CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
 COPY --from=builder ${CMAKE_INSTALL_PREFIX}/lib .local/lib
 COPY --from=builder $ARTIFACTS .
 COPY --from=builder $ARTIFACTS/lib .local/lib
+COPY --from=common ${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_INSTALL_PREFIX}/lib
+COPY --from=common ${CMAKE_INSTALL_PREFIX}/include ${CMAKE_INSTALL_PREFIX}/include
 
 RUN chown -R ${EII_UID}:${EII_UID} /tmp/ && \
     chmod -R 760 /tmp/
